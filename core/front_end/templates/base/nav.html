@@ -1,0 +1,63 @@
+
+<header class="h-auto w-auto wow bounceInDown" data-wow-duration="2s">
+    <nav class="navbar navbar-expand-lg pt-0">
+        <div class="container container-sm-100 container-md-100">
+            <div class="row w-100">
+                <div class="col-md-2 d-xl-none d-lg-none d-md-block col-sm-2 col-2">
+                    <div class="inner-drop h-100 h-sm-50 w-100 pt-2">
+                        <div class="dropdown h-100">
+                            <button class="btn btn-secondary btn-drop h-100 h-sm-50 d-block" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-regular fa-bars fs-4"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Home</a></li>
+                                <li><a class="dropdown-item" href="#">Courses</a></li>
+                                <li><a class="dropdown-item" href="#">Mentors</a></li>
+                                <li><a class="dropdown-item" href="#">About</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-5 col-lg-3 col-md-6 col-sm-5 col-3">
+                    <div class="inner-brand h-100 py-lg-1 py-2">
+                        <a href="" class="fs-2 text-dark fw-bolder d-block my-auto">K-Lop</a>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-6 d-xl-block d-lg-block d-md-none d-sm-none d-none">
+                    <div class="inner-list h-100">
+                        <ul class="d-xl-flex d-lg-flex justify-content-around align-items-center h-100 py-lg-3 py-xl-0">
+                            <li class="w-100 h-100 text-center">
+                                <a href="" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Home</a>
+                            </li>
+                            <li class="w-100 h-100 text-center">
+                                <a href="" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Courses</a>
+                            </li class="w-100 h-100">
+                            <li class="w-100 h-100 text-center">
+                                <a href="" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Mentors</a>
+                            </li>
+                            <li class="w-100 h-100 text-center">
+                                <a href="" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">About</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-5 col-7">
+                    
+                    {% block log-out %}
+                        
+                    {% endblock log-out %}
+                        
+                </div>
+
+            </div>
+        </div>
+    </nav>
+    <div class="modal-box">
+        
+        {% block modal-logout %}
+            
+        {% endblock modal-logout %}
+            
+    </div>
+</header>

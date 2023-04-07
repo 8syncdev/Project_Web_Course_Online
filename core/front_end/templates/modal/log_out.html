@@ -1,0 +1,96 @@
+{% extends 'templates/base/nav.html' %}
+
+{% block log-out %}
+<div class="inner-btn d-xl-flex d-lg-flex d-md-flex d-sm-flex d-flex justify-content-end h-100 pt-3">
+    <button class="btn btn-sign-in" data-bs-toggle="modal" data-bs-target="#modal-sign-in">
+        <p class="mb-0 color-btn-sign-in fw-bold">Sign in</p>
+    </button>
+
+    <!-- Button Sign up -->
+    <button class="btn btn-register w-50" data-bs-toggle="modal" data-bs-target="#modal-register">
+        <p class="mb-0 text-white">Sign up</p>
+    </button>
+
+</div>
+{% endblock log-out %}
+
+{% block modal-logout %}
+<!-- Modal Sign in -->
+<div class="modal fade bg-wrap" id="modal-sign-in" tabindex="-1" aria-labelledby="modal-sign-inLabel"
+    aria-hidden="true">
+    <div class="modal-dialog position-absolute top-custom">
+        <div class="modal-content modal-config">
+            <div class="modal-header">
+                <h3 class="modal-title text-center w-75 text-dark" id="modal-sign-inLabel">
+                    Welcome to my page
+                </h3>
+                <button type="button" class="btn-close rounded-circle bg-white rounded-thumbnail mx-auto"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form action="/">
+                        <div class="mb-2">
+                            <label for="formInputEmail1" class="form-label">Email
+                                address</label>
+                            <input type="email" class="form-control" id="formInputEmail1" aria-describedby="emailHelp">
+                        </div>
+                        <div class="mb-2">
+                            <label for="formInputPassword1" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="formInputPassword1">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary w-25">Sign in</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Modal Sign up-->
+<div class="modal fade bg-wrap" id="modal-register" tabindex="-1" aria-labelledby="modal-registerLabel"
+    aria-hidden="true">
+    <div class="modal-dialog position-absolute pos-custom">
+        <div class="modal-content modal-config">
+            <div class="modal-header">
+                <h3 class="modal-title text-center w-75 text-dark" id="modal-registerLabel">
+                    Welcome to my
+                    page</h3>
+                <button type="button" class="btn-close rounded-circle bg-white rounded-thumbnail mx-auto"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form method="post" action="{% url 'index' %}">
+                        {% csrf_token %}
+                        <div class="mb-2">
+                            <label for="formInputName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="formInputName" name="full_name">
+                        </div>
+                        <div class="mb-2">
+                            <label for="formInputPhone" class="form-label">Your Phone</label>
+                            <input type="text" class="form-control" id="formInputPhone" name="phone">
+                        </div>
+                        <div class="mb-2">
+                            <label for="formInputEmail1" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="formInputEmail1" aria-describedby="emailHelp" name="email">
+                        </div>
+                        <div class="mb-2">
+                            <label for="formInputPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="formInputPassword" name="password">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary w-25">Sign up</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock modal-logout %}
