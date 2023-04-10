@@ -1,17 +1,25 @@
 {% extends 'templates/base/nav.html' %}
 
 {% block log-out %}
-<div class="inner-btn d-xl-flex d-lg-flex d-md-flex d-sm-flex d-flex justify-content-end h-100 pt-3">
-    <button class="btn btn-sign-in" data-bs-toggle="modal" data-bs-target="#modal-sign-in">
-        <p class="mb-0 color-btn-sign-in fw-bold">Sign in</p>
-    </button>
 
-    <!-- Button Sign up -->
-    <button class="btn btn-register w-50" data-bs-toggle="modal" data-bs-target="#modal-register">
-        <p class="mb-0 text-white">Sign up</p>
-    </button>
+{% if log_decision %}
+    <div class="inner-btn d-xl-flex d-lg-flex d-md-flex d-sm-flex d-flex justify-content-end h-100 pt-3">
+        <button class="btn btn-sign-in" data-bs-toggle="modal" data-bs-target="#modal-sign-in">
+            <p class="mb-0 color-btn-sign-in fw-bold">Sign in</p>
+        </button>
 
-</div>
+        <!-- Button Sign up -->
+        <button class="btn btn-register w-50" data-bs-toggle="modal" data-bs-target="#modal-register">
+            <p class="mb-0 text-white">Sign up</p>
+        </button>
+    </div>
+{% else %}
+    <p> Wellcome You </p>
+{% endif %}
+
+
+    
+
 {% endblock log-out %}
 
 {% block modal-logout %}
@@ -29,19 +37,20 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form action="/">
+                    <form action="/" method="post">
+                        {% csrf_token %}
                         <div class="mb-2">
                             <label for="formInputEmail1" class="form-label">Email
                                 address</label>
-                            <input type="email" class="form-control" id="formInputEmail1" aria-describedby="emailHelp">
+                            <input type="email" class="form-control" id="formInputEmail1" aria-describedby="emailHelp" name="email">
                         </div>
                         <div class="mb-2">
-                            <label for="formInputPassword1" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="formInputPassword1">
+                            <label for="formInputPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="formInputPassword" name="password">
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary w-25">Sign in</button>
+                            <button type="submit" class="btn btn-primary w-50">Sign in</button>
                         </div>
                     </form>
                 </div>
@@ -68,11 +77,7 @@
                         {% csrf_token %}
                         <div class="mb-2">
                             <label for="formInputName" class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="formInputName" name="full_name">
-                        </div>
-                        <div class="mb-2">
-                            <label for="formInputPhone" class="form-label">Your Phone</label>
-                            <input type="text" class="form-control" id="formInputPhone" name="phone">
+                            <input type="text" class="form-control" id="formInputName" name="username">
                         </div>
                         <div class="mb-2">
                             <label for="formInputEmail1" class="form-label">Email address</label>
@@ -82,9 +87,13 @@
                             <label for="formInputPassword" class="form-label">Password</label>
                             <input type="password" class="form-control" id="formInputPassword" name="password">
                         </div>
+                        <div class="mb-2">
+                            <label for="formInputPasswordAgain" class="form-label">Password Again</label>
+                            <input type="password" class="form-control" id="formInputPassword" name="passwordAgain">
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary w-25">Sign up</button>
+                            <button type="submit" class="btn btn-primary w-50">Sign up</button>
                         </div>
                     </form>
                 </div>

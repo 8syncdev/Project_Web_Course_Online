@@ -1,41 +1,68 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from .models import Users
-from datetime import datetime
+from django.db import connection
 
 
+def convertDataReqToDict(data):
+    data = dict(data)
+    for key, value in data.items():
+        data[f'{key}'] = value[0]
+    return data
 
 
-
-
+def dictfetchall(cursor):
+    desc = cursor.description
+    return [
+        dict(zip([col[0] for col in desc], row))
+        for row in cursor.fetchall()
+    ]
 
 # Create your views here.
+mess_error = False
 def home_page(request): # 
-    try:
-        if request.method == 'POST':
-            data = request.POST
-            print(dict(data.list()))
-            user = Users.objects.filter(email = request.POST.get('email'))
-            if not user.exists():
-                form = Users.objects.create(user_id = Users.objects.count() + 1, username = request.POST.get('full_name'), email = request.POST.get('email'), password = request.POST.get('password'), created_at = datetime.now(), updated_at = datetime.now())
-                print('error')
-                return HttpResponseRedirect('/test')
+    global mess_error
+    if request.method == 'POST':
+        data = request.POST
+        # See all data from request POST.
+        data = convertDataReqToDict(data)
+        data_POST = [val.strip() for key, val in data.items() if key in ['username', 'password', 'email']]
+        print()
+        # Analysis data to decide data out/in.
+        if len(data) == 5:
+            with connection.cursor() as cursor:
+                query_proc_regiser_user = """
+                    exec DangKiUser_Proc %s,%s,%s
+                """
+                cursor.execute(query_proc_regiser_user,data_POST)
+            return redirect('/')
+        
+        elif len(data) == 3:
+            with connection.cursor() as cursor:
+                query_proc_regiser_user = """
+                    select dbo.LoginUser_Func(%s, %s) as check_log_in
+                """
+                cursor.execute(query_proc_regiser_user,data_POST)
+                check_log_in = dictfetchall(cursor)[0]
+            if check_log_in['check_log_in'] == 1:
+                print('Success')
+                return render(request, 'index.html', {
+                    'log_decision': False,
+                    'user' : Users.objects.filter(username=data_POST[0])
+                })
             else:
-                return HttpResponseRedirect('/')
-            
-        return render(request, 'index.html')
-    except:
-        return HttpResponseRedirect('/')
+                mess_error = True
+                return redirect('/')
+                
+    return render(request, 'index.html', {
+        'log_decision': True,
+        'mess_error': mess_error
+    })
     
 
-
-
 # Views For User:
-def 
-
-
 
 
 
