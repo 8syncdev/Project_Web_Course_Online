@@ -25,7 +25,7 @@
 
 <body>
     <!-- Header -->
-   {% include 'templates/modal/log_out.html' with log=log_decision mess_error=mess_error%}
+   {% include 'templates/modal/log_out.html' with log=log_decision mess_error=mess_error object_data=object_data %}
     <!-- End Header -->
     <main>
         {% block index-content %}

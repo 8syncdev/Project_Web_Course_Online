@@ -65,7 +65,15 @@ header .pos-custom {
     width: 400px;
     height: 400px;
 }
-
+/* After Login */
+header .user-login .btn-cus{
+    background-color: var(--color-btn-cta);
+    color: var(--bg-body);
+}
+header .user-login .dropdown-menu{
+    left: 74px;
+}
+/* End Header Header */
 /* Main */
 /* Section-1 */
 .sec-1 {

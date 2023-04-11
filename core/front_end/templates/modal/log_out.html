@@ -1,24 +1,45 @@
 {% extends 'templates/base/nav.html' %}
-
+{% load static %}
 {% block log-out %}
 
 {% if log_decision %}
-    <div class="inner-btn d-xl-flex d-lg-flex d-md-flex d-sm-flex d-flex justify-content-end h-100 pt-3">
-        <button class="btn btn-sign-in" data-bs-toggle="modal" data-bs-target="#modal-sign-in">
-            <p class="mb-0 color-btn-sign-in fw-bold">Sign in</p>
-        </button>
+<div class="inner-btn d-xl-flex d-lg-flex d-md-flex d-sm-flex d-flex justify-content-end h-100 pt-3">
+    <button class="btn btn-sign-in" data-bs-toggle="modal" data-bs-target="#modal-sign-in">
+        <p class="mb-0 color-btn-sign-in fw-bold">Sign in</p>
+    </button>
 
-        <!-- Button Sign up -->
-        <button class="btn btn-register w-50" data-bs-toggle="modal" data-bs-target="#modal-register">
-            <p class="mb-0 text-white">Sign up</p>
-        </button>
-    </div>
+    <!-- Button Sign up -->
+    <button class="btn btn-register w-50" data-bs-toggle="modal" data-bs-target="#modal-register">
+        <p class="mb-0 text-white">Sign up</p>
+    </button>
+</div>
 {% else %}
-    <p> Wellcome You </p>
+<div class="inner-wrap user-login py-3">
+    <div class="dropdown text-center">
+        <button class="btn rounded-pill btn-cus" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            {{object_data}}
+        </button>
+        <ul class="dropdown-menu w-50" aria-labelledby="dropdownMenuButton1">
+            <li><a class="dropdown-item" href="#">
+                    <i class="fa-solid fa-cart-shopping"></i><span
+                        class="d-inline-block w-50 text-center">Cart</span><span class="quantity"></span>
+                </a></li>
+            <li><a class="dropdown-item" href="#">
+                    <i class="fa-regular fa-user"></i><span
+                        class="d-inline-block w-50 text-center">Cart</span><span class="quantity"></span>
+                </a></li>
+            <li><a class="dropdown-item" href="{% url 'index' %}">
+                    <i class="fa-solid fa-cart-shopping"></i><span
+                        class="d-inline-block w-50 text-center">Log out</span><span class="quantity"></span>
+                </a></li>
+        </ul>
+    </div>
+</div>
 {% endif %}
 
 
-    
+
 
 {% endblock log-out %}
 
@@ -42,7 +63,8 @@
                         <div class="mb-2">
                             <label for="formInputEmail1" class="form-label">Email
                                 address</label>
-                            <input type="email" class="form-control" id="formInputEmail1" aria-describedby="emailHelp" name="email">
+                            <input type="email" class="form-control" id="formInputEmail1" aria-describedby="emailHelp"
+                                name="email">
                         </div>
                         <div class="mb-2">
                             <label for="formInputPassword" class="form-label">Password</label>
@@ -81,7 +103,8 @@
                         </div>
                         <div class="mb-2">
                             <label for="formInputEmail1" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="formInputEmail1" aria-describedby="emailHelp" name="email">
+                            <input type="email" class="form-control" id="formInputEmail1" aria-describedby="emailHelp"
+                                name="email">
                         </div>
                         <div class="mb-2">
                             <label for="formInputPassword" class="form-label">Password</label>
