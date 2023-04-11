@@ -15,23 +15,24 @@
 </div>
 {% else %}
 <div class="inner-wrap user-login py-3">
-    <div class="dropdown text-center">
+    <div class="dropdown text-center text-sm-end text-lg-center text-md-center">
         <button class="btn rounded-pill btn-cus" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown"
             aria-expanded="false">
             {{object_data}}
         </button>
         <ul class="dropdown-menu w-50" aria-labelledby="dropdownMenuButton1">
             <li><a class="dropdown-item" href="#">
-                    <i class="fa-solid fa-cart-shopping"></i><span
-                        class="d-inline-block w-50 text-center">Cart</span><span class="quantity"></span>
+                    <span class="d-inline-block w-25 text-center"><i class="fa-solid fa-cart-shopping"></i></span>
+                    <span class="d-inline-block w-50 text-center">Cart</span>
+                    <span class="quantity"></span>
                 </a></li>
             <li><a class="dropdown-item" href="#">
-                    <i class="fa-regular fa-user"></i><span
-                        class="d-inline-block w-50 text-center">Cart</span><span class="quantity"></span>
+                    <span class="d-inline-block w-25 text-center"><i class="fa-solid fa-user"></i></span>
+                    <span class="d-inline-block w-50 text-center">Profile</span>
                 </a></li>
             <li><a class="dropdown-item" href="{% url 'index' %}">
-                    <i class="fa-solid fa-cart-shopping"></i><span
-                        class="d-inline-block w-50 text-center">Log out</span><span class="quantity"></span>
+                    <span class="d-inline-block w-25 text-center"><i class="fa-solid fa-sign-out"></i></span>
+                    <span class="d-inline-block w-50 text-center">Log out</span>
                 </a></li>
         </ul>
     </div>
@@ -119,6 +120,8 @@
                             <button type="submit" class="btn btn-primary w-50">Sign up</button>
                         </div>
                     </form>
+
+
                 </div>
             </div>
 

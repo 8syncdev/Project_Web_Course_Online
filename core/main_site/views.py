@@ -24,6 +24,7 @@ def dictfetchall(cursor):
 mess_error = False
 log_decision = True
 object_data = None
+# Set up for maintaining Get request:
 def home_page(request): # 
     global mess_error, log_decision, object_data
     if request.method == 'POST':

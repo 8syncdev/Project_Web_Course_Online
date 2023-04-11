@@ -85,8 +85,14 @@ header .user-login .dropdown-menu{
     font-weight: 500;
 }
 
-.sec-1 .wrap-btn {
-    padding-right: 30px;
+.sec-1 .wrap-btn.w-1 {
+    min-height: 50px;
+    padding-right: 10px;
+    width: 40%;
+}
+.sec-1 .wrap-btn.w-2 {
+    min-height: 50px;
+    padding-left: 10px;
     width: 40%;
 }
 
