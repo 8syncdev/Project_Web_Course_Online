@@ -39,6 +39,9 @@
 </div>
 {% endif %}
 
+{% if mess_error %}
+    
+{% endif %}
 
 
 
@@ -51,9 +54,9 @@
     <div class="modal-dialog position-absolute top-custom">
         <div class="modal-content modal-config">
             <div class="modal-header">
-                <h3 class="modal-title text-center w-75 text-dark" id="modal-sign-inLabel">
+                <h4 class="modal-title text-center w-75 text-dark" id="modal-sign-inLabel">
                     Welcome to my page
-                </h3>
+                </h4>
                 <button type="button" class="btn-close rounded-circle bg-white rounded-thumbnail mx-auto"
                     data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -88,9 +91,9 @@
     <div class="modal-dialog position-absolute pos-custom">
         <div class="modal-content modal-config">
             <div class="modal-header">
-                <h3 class="modal-title text-center w-75 text-dark" id="modal-registerLabel">
+                <h4 class="modal-title text-center w-75 text-dark" id="modal-registerLabel">
                     Welcome to my
-                    page</h3>
+                    page</h4>
                 <button type="button" class="btn-close rounded-circle bg-white rounded-thumbnail mx-auto"
                     data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -114,6 +117,13 @@
                         <div class="mb-2">
                             <label for="formInputPasswordAgain" class="form-label">Password Again</label>
                             <input type="password" class="form-control" id="formInputPassword" name="passwordAgain">
+                        </div>
+                        <div class="my-3 dropend">
+                            <label for="cars" class="btn btn-outline-success dropdown-toggle" type="button" id="dropdownMenuRole" data-bs-toggle="dropdown" aria-expanded="false">Choose Role</label>
+                            <select name="role" class="dropdown-menu" aria-labelledby="dropdownMenuRole">
+                                <option value="user" class="dropdown-item">User</option>
+                                <option value="admin" class="dropdown-item">Admin</option>
+                            </select>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

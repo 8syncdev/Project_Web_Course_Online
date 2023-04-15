@@ -81,10 +81,10 @@ DATABASES = {
         "ENGINE": "mssql",
         "NAME": "Web_Course_Online",
         "USER": "sa",
-        "PASSWORD": "123",
-        "HOST": "DESKTOP-R57BPKR",
+        "PASSWORD": "2001phamhai",
+        "HOST": "DESKTOP-KR6ULCD",
         "PORT": "",
-        "OPTIONS": {"driver": "ODBC Driver 17 for SQL Server", 
+        "OPTIONS": {"driver": "ODBC Driver 17 for SQL Server",
         },
     },
 }

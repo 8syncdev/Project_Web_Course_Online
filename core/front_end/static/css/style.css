@@ -1,4 +1,8 @@
 /* Header CSS */
+header{
+    position: relative;
+    z-index: 9999;
+}
 header .bag-height {
     height: 70px;
     border-radius: 30px;
