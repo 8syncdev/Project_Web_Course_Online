@@ -32,7 +32,7 @@ def home_page(request): #
         # See all data from request POST.
         data = convertDataReqToDict(data)
         print(data)
-        data_POST = [val.strip() for key, val in data.items() if key in ['username', 'email',  'password',]]
+        data_POST = [val.strip() for key, val in data.items() if key in ['username', 'email',  'password','passwordAgain']]
         print(data_POST)
         # Analysis data to decide data out/in.
         len_data_before_register = Users.objects.count()
@@ -40,7 +40,7 @@ def home_page(request): #
             if data['role'] == 'user':
                 with connection.cursor() as cursor:
                     query_proc_regiser_user = """
-                        exec DangKiUser_Proc %s,%s,%s
+                        exec DangKiUser_Proc %s,%s,%s, %s
                     """
                     cursor.execute(query_proc_regiser_user,data_POST)
                     len_data_after_update = Users.objects.count()

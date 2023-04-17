@@ -17,10 +17,10 @@ VALUES
 INSERT INTO users_roles (user_id, role_id)
 VALUES 
     (1, 1),
-    (2, 2),
-    (3, 3),
-    (4, 3),
-    (5, 3);
+    (2, 1),
+    (3, 1),
+    (4, 1),
+    (5, 1);
 
 -- Insert five tuples into the payment_status table
 INSERT INTO payment_status (payment_status_id, status_name)
