@@ -11,8 +11,8 @@
                                 <i class="fa-regular fa-bars fs-4"></i>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Home</a></li>
-                                <li><a class="dropdown-item" href="#">Courses</a></li>
+                                <li><a class="dropdown-item" href="{% if object_data != None %} {% url 'user_login' pk=object_data.user_id %} {% else %} {% url 'index' %} {% endif %}">Home</a></li>
+                                <li><a class="dropdown-item" href="{% url 'all_courses' slug='all' %}">Courses</a></li>
                                 <li><a class="dropdown-item" href="#">Mentors</a></li>
                                 <li><a class="dropdown-item" href="#">About</a></li>
                             </ul>
@@ -26,12 +26,12 @@
                 </div>
                 <div class="col-xl-4 col-lg-6 d-xl-block d-lg-block d-md-none d-sm-none d-none">
                     <div class="inner-list h-100">
-                        <ul class="d-xl-flex d-lg-flex justify-content-around align-items-center h-100 py-lg-3 py-xl-0">
+                        <ul class="d-xl-flex d-lg-flex justify-content-around align-items-center h-100 py-lg-3 py-xl-0 nav__header">
                             <li class="w-100 h-100 text-center">
-                                <a href="" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Home</a>
+                                <a href="{% if object_data != None %} {% url 'user_login' pk=object_data.user_id %} {% else %} {% url 'index' %} {% endif %}" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Home</a>
                             </li>
                             <li class="w-100 h-100 text-center">
-                                <a href="" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Courses</a>
+                                <a href="{% url 'all_courses' slug='all' %}" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Courses</a>
                             </li class="w-100 h-100">
                             <li class="w-100 h-100 text-center">
                                 <a href="" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Mentors</a>

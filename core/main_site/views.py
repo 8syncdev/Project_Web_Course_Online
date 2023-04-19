@@ -40,7 +40,7 @@ def home_page(request): #
             if data['role'] == 'user':
                 with connection.cursor() as cursor:
                     query_proc_regiser_user = """
-                        exec DangKiUser_Proc %s,%s,%s, %s
+                        exec DangKiUser_Proc %s,%s,%s,%s
                     """
                     cursor.execute(query_proc_regiser_user,data_POST)
                     len_data_after_update = Users.objects.count()
@@ -50,11 +50,11 @@ def home_page(request): #
                 return redirect('/')
             elif data['role'] == 'admin':
                 with connection.cursor() as cursor:
-                    query_proc_regiser_user = """
-                        exec DangKiAdmin_Proc %s,%s,%s
+                    query_proc_regiser_admin = """
+                        exec DangKiAdmin_Proc %s,%s,%s,%s
                     """
-                    cursor.execute(query_proc_regiser_user,data_POST)
-                    cursor.execute(query_proc_regiser_user,data_POST)
+                    cursor.execute(query_proc_regiser_admin,data_POST)
+                    cursor.execute(query_proc_regiser_admin,data_POST)
                     len_data_after_update = Users.objects.count()
                     if len_data_after_update == len_data_before_register:
                         mess_error = True
@@ -74,13 +74,14 @@ def home_page(request): #
                 mess_error = False
                 print(data_POST) # Check data, we see ['email]
                 user = get_object_or_404(Users, email=data_POST[0])
+                object_data = user
                 return redirect(f'/user/{user.user_id}')
             else:
                 log_decision = True
                 mess_error = True
                 object_data = None
                 return redirect('/')
-    else: # GET http:
+    if request.method == 'GET': # GET http:
         log_decision = True
         object_data = None
         if mess_error == True:
@@ -95,22 +96,102 @@ def home_page(request): #
     })
 # User After Login:
 def page_user_login(request, pk):
+    # page for each each user
     global object_data # update object when log in user.
+    print(object_data.user_id)
     object_data = get_object_or_404(Users, pk=pk)
     return render(request, 'index.html',{
                     'log_decision': log_decision,
                     'object_data': object_data
                 })
 
-def user_profile(request):
-    pass
+def profile(request):
+    global object_data
+    print(object_data)
+    return render(request, 'templates/user/profile/profile.html',{
+        'object_data': object_data
+    })
 
 # End Set up For User:
 
 # Views For User:
 
+# Views About Courses:
+def list_all_courses(request, slug):
+    global object_data # remain data for user when using website.
+    if request.method == 'GET':
+        with connection.cursor() as cursor:
+            if slug == 'all':
+                # Data Origin:
+                query = """
+                    select * from all_courses_info
+                """
+                cursor.execute(query)
+                data_origin = dictfetchall(cursor)
+                data = data_origin
+            elif slug == 'prices_asc':
+                # Prices_Asc
+                query = """
+                    SELECT * FROM v_courses_price_asc
+                """
+                cursor.execute(query)
+                data_prices_asc = dictfetchall(cursor)
+                data = data_prices_asc
+            elif slug == 'prices_desc':
+                # Price_Desc:
+                query = """
+                    SELECT * FROM v_course_price_descending
+                    ORDER BY price DESC
+                """
+                cursor.execute(query)
+                data_prices_desc = dictfetchall(cursor)
+                data = data_prices_desc
 
+            elif slug == 'beginner':
+                query = """
+                    SELECT * FROM v_beginner_courses_info
+                """
+                cursor.execute(query)
+                data_beginner = dictfetchall(cursor)
+                data = data_beginner
+            elif slug == 'intermediate':
+                query = """
+                    SELECT * FROM v_intermediate_courses_info
+                """
+                cursor.execute(query)
+                data_intermediate = dictfetchall(cursor)
+                data = data_intermediate
 
+            elif slug == 'expert':
+                query = """
+                    SELECT * FROM v_expert_courses_info
+                """
+                cursor.execute(query)
+                data_expert = dictfetchall(cursor)
+                data = data_expert
+
+            elif slug == 'master':
+                query = """
+                    SELECT * FROM v_master_courses_info
+                """
+                cursor.execute(query)
+                data_master = dictfetchall(cursor)
+                data = data_master
+
+            elif slug == 'advanced':
+                query = """
+                    SELECT * FROM v_advanced_courses_info
+                """
+                cursor.execute(query)
+                data_advanced = dictfetchall(cursor)
+                data = data_advanced
+    print(data)
+    return render(request, 'templates/courses/listAllCourses.html',{
+        'data': data,
+        'log_decision': log_decision,
+        'mess_error': mess_error,
+        'object_data': object_data
+    })
 
 def test(request):
     obj = Users.objects.all()

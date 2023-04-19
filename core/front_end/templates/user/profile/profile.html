@@ -3,7 +3,26 @@
 
 
 {% block content %}
-    <div class="container-fluid">
-        
+    <div class="container my-5">
+        <div class="card">
+            <div class="inner-title card-title border-bottom">
+                <p class="m-0 my-2 text-center">Information Of {{object_data}}</p>
+            </div>
+            <div class="inner-body card-body">
+                <div class="inner-wrap">
+                    <p class="email m-0 my-1">
+                        <span class="name-email">Email: </span>{{object_data.email}}
+                    </p>
+                    <p class="email m-0 my-1">
+                        <span class="name-email">Password: </span>{{object_data.password}}
+                    </p>
+                </div>
+            </div>
+            <div class="inner-footer card-footer">
+                <div class="group-button justify-content-center d-flex">
+                    <a href="" class="btn btn-primary d-block">Change Information</a>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock content %}

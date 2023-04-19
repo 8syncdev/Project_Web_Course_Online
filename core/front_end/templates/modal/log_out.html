@@ -15,7 +15,7 @@
 </div>
 {% else %}
 <div class="inner-wrap user-login py-3">
-    <div class="dropdown text-center text-sm-end text-lg-center text-md-center">
+    <div class="dropdown text-end">
         <button class="btn rounded-pill btn-cus" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown"
             aria-expanded="false">
             {{object_data}}
@@ -26,7 +26,7 @@
                     <span class="d-inline-block w-50 text-center">Cart</span>
                     <span class="quantity"></span>
                 </a></li>
-            <li><a class="dropdown-item" href="#">
+            <li><a class="dropdown-item" href="{% url 'profile' %}">
                     <span class="d-inline-block w-25 text-center"><i class="fa-solid fa-user"></i></span>
                     <span class="d-inline-block w-50 text-center">Profile</span>
                 </a></li>

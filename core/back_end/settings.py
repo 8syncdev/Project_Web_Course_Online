@@ -77,12 +77,22 @@ WSGI_APPLICATION = 'back_end.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
+    "my_pc": {
         "ENGINE": "mssql",
         "NAME": "Web_Course_Online",
         "USER": "sa",
         "PASSWORD": "123",
         "HOST": "DESKTOP-R57BPKR",
+        "PORT": "",
+        "OPTIONS": {"driver": "ODBC Driver 17 for SQL Server",
+        },
+    },
+    "default": {
+        "ENGINE": "mssql",
+        "NAME": "Web_Course_Online",
+        "USER": "sa",
+        "PASSWORD": "2001phamhai",
+        "HOST": "DESKTOP-KR6ULCD",
         "PORT": "",
         "OPTIONS": {"driver": "ODBC Driver 17 for SQL Server",
         },
