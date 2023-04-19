@@ -2,7 +2,10 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from .models import Users
+from . import models
 from django.db import connection
+
+
 
 
 def convertDataReqToDict(data):
@@ -12,7 +15,7 @@ def convertDataReqToDict(data):
     return data
 
 
-def dictfetchall(cursor):
+def dict_fetch_all(cursor):
     desc = cursor.description
     return [
         dict(zip([col[0] for col in desc], row))
@@ -67,7 +70,7 @@ def home_page(request): #
                     select dbo.LoginUser_Func(%s, %s) as check_log_in
                 """
                 cursor.execute(query_func_login_user,data_POST)
-                check_log_in = dictfetchall(cursor)[0] # convert data query to dict (like Objects).
+                check_log_in = dict_fetch_all(cursor)[0] # convert data query to dict (like Objects).
             if check_log_in['check_log_in'] == 1: # Functions Check Login Return 0 Or 1:
                 print('Success')
                 log_decision = False
@@ -127,7 +130,7 @@ def list_all_courses(request, slug):
                     select * from all_courses_info
                 """
                 cursor.execute(query)
-                data_origin = dictfetchall(cursor)
+                data_origin = dict_fetch_all(cursor)
                 data = data_origin
             elif slug == 'prices_asc':
                 # Prices_Asc
@@ -135,7 +138,7 @@ def list_all_courses(request, slug):
                     SELECT * FROM v_courses_price_asc
                 """
                 cursor.execute(query)
-                data_prices_asc = dictfetchall(cursor)
+                data_prices_asc = dict_fetch_all(cursor)
                 data = data_prices_asc
             elif slug == 'prices_desc':
                 # Price_Desc:
@@ -144,7 +147,7 @@ def list_all_courses(request, slug):
                     ORDER BY price DESC
                 """
                 cursor.execute(query)
-                data_prices_desc = dictfetchall(cursor)
+                data_prices_desc = dict_fetch_all(cursor)
                 data = data_prices_desc
 
             elif slug == 'beginner':
@@ -152,14 +155,14 @@ def list_all_courses(request, slug):
                     SELECT * FROM v_beginner_courses_info
                 """
                 cursor.execute(query)
-                data_beginner = dictfetchall(cursor)
+                data_beginner = dict_fetch_all(cursor)
                 data = data_beginner
             elif slug == 'intermediate':
                 query = """
                     SELECT * FROM v_intermediate_courses_info
                 """
                 cursor.execute(query)
-                data_intermediate = dictfetchall(cursor)
+                data_intermediate = dict_fetch_all(cursor)
                 data = data_intermediate
 
             elif slug == 'expert':
@@ -167,7 +170,7 @@ def list_all_courses(request, slug):
                     SELECT * FROM v_expert_courses_info
                 """
                 cursor.execute(query)
-                data_expert = dictfetchall(cursor)
+                data_expert = dict_fetch_all(cursor)
                 data = data_expert
 
             elif slug == 'master':
@@ -175,7 +178,7 @@ def list_all_courses(request, slug):
                     SELECT * FROM v_master_courses_info
                 """
                 cursor.execute(query)
-                data_master = dictfetchall(cursor)
+                data_master = dict_fetch_all(cursor)
                 data = data_master
 
             elif slug == 'advanced':
@@ -183,7 +186,7 @@ def list_all_courses(request, slug):
                     SELECT * FROM v_advanced_courses_info
                 """
                 cursor.execute(query)
-                data_advanced = dictfetchall(cursor)
+                data_advanced = dict_fetch_all(cursor)
                 data = data_advanced
     print(data)
     return render(request, 'templates/courses/listAllCourses.html',{
@@ -191,6 +194,22 @@ def list_all_courses(request, slug):
         'log_decision': log_decision,
         'mess_error': mess_error,
         'object_data': object_data
+    })
+
+
+
+
+# View for mentors:
+def list_all_mentors(request):
+    with connection.cursor() as cursor:
+        query = """"
+            SELECT * FROM v_instructor
+        """
+        cursor.execute(query)
+        mentors = dict_fetch_all(cursor)
+
+    return render(request, 'templates/mentors/listAllMentors.html',{
+        'mentors':mentors
     })
 
 def test(request):

@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'back_end.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    "my_pc": {
+    "default": {
         "ENGINE": "mssql",
         "NAME": "Web_Course_Online",
         "USER": "sa",
@@ -87,7 +87,7 @@ DATABASES = {
         "OPTIONS": {"driver": "ODBC Driver 17 for SQL Server",
         },
     },
-    "default": {
+    "off": {
         "ENGINE": "mssql",
         "NAME": "Web_Course_Online",
         "USER": "sa",

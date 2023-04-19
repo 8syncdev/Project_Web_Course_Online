@@ -4,17 +4,17 @@
 
 {% block content %}
     <div class="container my-5">
-        <div class="card">
+        <div class="card w-50 mx-auto wow slideInLeft" data-wow-duration="2s">
             <div class="inner-title card-title border-bottom">
-                <p class="m-0 my-2 text-center">Information Of {{object_data}}</p>
+                <p class="m-0 my-2 text-center text-dark fw-bold">Information Of {{object_data}}</p>
             </div>
             <div class="inner-body card-body">
                 <div class="inner-wrap">
                     <p class="email m-0 my-1">
-                        <span class="name-email">Email: </span>{{object_data.email}}
+                        <span class="name-email text-dark fw-bold">Email: </span>{{object_data.email}}
                     </p>
                     <p class="email m-0 my-1">
-                        <span class="name-email">Password: </span>{{object_data.password}}
+                        <span class="name-email text-dark fw-bold">Password: </span>{{object_data.password}}
                     </p>
                 </div>
             </div>
