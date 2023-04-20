@@ -1,10 +1,10 @@
 
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
-from .models import Users
+from .models import Users, Courses
 from . import models
 from django.db import connection
-
+from .data_files.images_data import images_data
 
 
 
@@ -27,6 +27,7 @@ def dict_fetch_all(cursor):
 mess_error = False
 log_decision = True
 object_data = None
+images_data = images_data
 # Set up for maintaining Get request:
 def home_page(request): #
     global mess_error, log_decision, object_data
@@ -101,7 +102,6 @@ def home_page(request): #
 def page_user_login(request, pk):
     # page for each each user
     global object_data # update object when log in user.
-    print(object_data.user_id)
     object_data = get_object_or_404(Users, pk=pk)
     return render(request, 'index.html',{
                     'log_decision': log_decision,
@@ -122,6 +122,8 @@ def profile(request):
 # Views About Courses:
 def list_all_courses(request, slug):
     global object_data # remain data for user when using website.
+    global images_data
+    print(images_data)
     if request.method == 'GET':
         with connection.cursor() as cursor:
             if slug == 'all':
@@ -188,12 +190,17 @@ def list_all_courses(request, slug):
                 cursor.execute(query)
                 data_advanced = dict_fetch_all(cursor)
                 data = data_advanced
-    print(data)
+    key = [key for key, val in images_data.items()]
+    for item in data:
+        idx = item.get('title')
+        if idx in key:
+            print(images_data.get(f'{idx}'))
     return render(request, 'templates/courses/listAllCourses.html',{
         'data': data,
         'log_decision': log_decision,
         'mess_error': mess_error,
-        'object_data': object_data
+        'object_data': object_data,
+        'images_data': images_data
     })
 
 
@@ -201,15 +208,20 @@ def list_all_courses(request, slug):
 
 # View for mentors:
 def list_all_mentors(request):
+    global object_data
     with connection.cursor() as cursor:
-        query = """"
+        query = """
             SELECT * FROM v_instructor
         """
         cursor.execute(query)
         mentors = dict_fetch_all(cursor)
-
+    print(object_data)
     return render(request, 'templates/mentors/listAllMentors.html',{
-        'mentors':mentors
+        'mentors':mentors,
+        'log_decision': log_decision,
+        'mess_error': mess_error,
+        'object_data': object_data,
+        'images_data': images_data
     })
 
 def test(request):

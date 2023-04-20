@@ -32,5 +32,10 @@ a{
     -o-border-radius: 12px;
 }
 .icon-star{
-    color: #FCC306;
+    color: #e3f238;
+}
+
+img{
+    max-height: 233px;
+    object-fit: contain;
 }

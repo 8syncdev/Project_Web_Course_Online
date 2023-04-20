@@ -5,4 +5,19 @@
 {% endblock head-title %}
     
 {% block content %}
+    <div class="container py-5 mt-3">
+        <div class="row row-cols-xl-3">
+            {% for item in mentors %}
+                <div class="col-xl-4 my-2">
+                    <a href="" class="d-block">
+                        <div class="inner-wrap card">
+                            <img src="" alt="">
+                            <p class="inner-title text-center text-dark">{{item.instructor}}</p>
+                        </div>
+                    </a>
+                    
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock content %}

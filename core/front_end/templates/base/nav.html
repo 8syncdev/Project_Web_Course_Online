@@ -13,7 +13,7 @@
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{% if object_data != None %} {% url 'user_login' pk=object_data.user_id %} {% else %} {% url 'index' %} {% endif %}">Home</a></li>
                                 <li><a class="dropdown-item" href="{% url 'all_courses' slug='all' %}">Courses</a></li>
-                                <li><a class="dropdown-item" href="#">Mentors</a></li>
+                                <li><a class="dropdown-item" href="{% url 'all-mentors' %}">Mentors</a></li>
                                 <li><a class="dropdown-item" href="#">About</a></li>
                             </ul>
                         </div>
@@ -34,7 +34,7 @@
                                 <a href="{% url 'all_courses' slug='all' %}" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Courses</a>
                             </li class="w-100 h-100">
                             <li class="w-100 h-100 text-center">
-                                <a href="" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Mentors</a>
+                                <a href="{% url 'all-mentors' %}" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Mentors</a>
                             </li>
                             <li class="w-100 h-100 text-center">
                                 <a href="" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">About</a>
