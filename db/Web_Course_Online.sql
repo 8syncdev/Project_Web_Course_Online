@@ -99,7 +99,29 @@ CREATE TABLE course_categories (
     PRIMARY KEY (course_id, category_id)
 );
 
+-- Create budget table
+CREATE TABLE budget (
+budget_id INT PRIMARY KEY,
+user_id INT NOT NULL,
+amount DECIMAL(10,2) NOT NULL,
+start_date DATETIME NOT NULL,
+end_date DATETIME NOT NULL,
+CONSTRAINT FK_budget_users FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+
+
+
 -- Constraint:
+
+-- Add check constraint for amount field in budget table
+ALTER TABLE budget ADD CONSTRAINT CHK_budget_amount CHECK (amount > 0);
+
+-- Add NOT NULL constraint for start_date field in budget table
+ALTER TABLE budget ALTER COLUMN start_date DATETIME NOT NULL;
+
+-- Add NOT NULL constraint for end_date field in budget table
+ALTER TABLE budget ALTER COLUMN end_date DATETIME NOT NULL;
 
 -- Add UNIQUE constraint for username field in users table
 ALTER TABLE users ADD CONSTRAINT UQ_users_username UNIQUE (username);

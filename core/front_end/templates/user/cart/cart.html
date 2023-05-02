@@ -1,5 +1,61 @@
 {% extends 'templates/base/base.html' %}
+{% load static %}
+
+{% block head-title %}
+Cart And Bill
+{% endblock head-title %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/user/cart.css' %}">
+{% endblock %}
 
 {% block content %}
-    
+<div class="container mh-cus">
+    <div class="bill">
+        <p class="bill__title fs-3 fw-bold text-center text-dark">Bills</p>
+        <div class="bil__content">
+            <table class="table table table-color table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">STT</th>
+                        <th scope="col">Name Course</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Level</th>
+                        <th scope="col">Registered Date</th>
+                        <th scope="col">Handle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart %}
+                    <tr>
+                        <th scope="row" class="idx"></th>
+                        <td>{{item.title}}</td>
+                        <td>{{item.price}}</td>
+                        <td>{{item.level_name}}</td>
+                        <td>{{item.register_date}}</td>
+                        <td>
+                            <div class="group-btn">
+                                <a class="btn btn-danger btn-sm"
+                                    href="{% url 'cart' slug='delete-course' reg_id=item.register_id %}">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <th class="text-center fs-3" scope="row" colspan="6">
+                            Total Cost: {{total_cost}}
+                        </th>
+                    </tr>
+                    
+                </tbody>
+                
+            </table>
+            <div class="group-btn d-flex justify-content-center gap-2 pb-3">
+                <a class="btn btn-success btn-lg btn-outline-light fw-bold" href="">Paid</a>
+                <a class="btn btn-primary btn-lg" href="">Print Bill</a>
+            </div>
+        </div>
+
+    </div>
+</div>
 {% endblock content %}

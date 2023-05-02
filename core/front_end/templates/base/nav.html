@@ -1,4 +1,11 @@
 {% load static %}
+
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/nav/nav.css' %}">
+{% endblock %}
+
+
 <header class="h-auto w-auto wow bounceInDown" data-wow-duration="2s">
     <nav class="navbar navbar-expand-lg pt-0">
         <div class="container container-sm-100 container-md-100">
@@ -11,7 +18,9 @@
                                 <i class="fa-regular fa-bars fs-4"></i>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{% if object_data != None %} {% url 'user_login' pk=object_data.user_id %} {% else %} {% url 'index' %} {% endif %}">Home</a></li>
+                                <li><a class="dropdown-item"
+                                        href="{% if object_data != None %} {% url 'user_login' pk=object_data.user_id %} {% else %} {% url 'index' %} {% endif %}">Home</a>
+                                </li>
                                 <li><a class="dropdown-item" href="{% url 'all_courses' slug='all' %}">Courses</a></li>
                                 <li><a class="dropdown-item" href="{% url 'all-mentors' %}">Mentors</a></li>
                                 <li><a class="dropdown-item" href="#">About</a></li>
@@ -19,22 +28,24 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-5 col-lg-3 col-md-6 col-sm-5 col-3">
-                    <div class="inner-brand h-100 py-lg-1 py-2">
-                        <a href="" class="fs-2 text-dark fw-bolder d-block my-auto">K-Lop</a>
-                    </div>
+                <div class="col-xl-5 col-lg-3 col-md-6 col-sm-5 col-3 pt-2">
+                    <a href="" class="fs-2 text-dark fw-bolder d-block my-auto m-0">K-Lop</a>
                 </div>
                 <div class="col-xl-4 col-lg-6 d-xl-block d-lg-block d-md-none d-sm-none d-none">
                     <div class="inner-list h-100">
-                        <ul class="d-xl-flex d-lg-flex justify-content-around align-items-center h-100 py-lg-3 py-xl-0 nav__header">
+                        <ul
+                            class="d-xl-flex d-lg-flex justify-content-around align-items-center h-100 py-lg-3 py-xl-0 nav__header m-0">
                             <li class="w-100 h-100 text-center">
-                                <a href="{% if object_data != None %} {% url 'user_login' pk=object_data.user_id %} {% else %} {% url 'index' %} {% endif %}" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Home</a>
+                                <a href="{% if object_data != None %} {% url 'user_login' pk=object_data.user_id %} {% else %} {% url 'index' %} {% endif %}"
+                                    class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Home</a>
                             </li>
                             <li class="w-100 h-100 text-center">
-                                <a href="{% url 'all_courses' slug='all' %}" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Courses</a>
+                                <a href="{% url 'all_courses' slug='all' %}"
+                                    class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Courses</a>
                             </li class="w-100 h-100">
                             <li class="w-100 h-100 text-center">
-                                <a href="{% url 'all-mentors' %}" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Mentors</a>
+                                <a href="{% url 'all-mentors' %}"
+                                    class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">Mentors</a>
                             </li>
                             <li class="w-100 h-100 text-center">
                                 <a href="" class="d-inline-block text-dark fw-bold my-xl-4 my-lg-2">About</a>
@@ -43,21 +54,21 @@
                     </div>
                 </div>
                 <div class="col-xl-3 col-lg-3 col-md-4 col-sm-5 col-7">
-                    
+
                     {% block log-out %}
-                        
+
                     {% endblock log-out %}
-                        
+
                 </div>
 
             </div>
         </div>
     </nav>
     <div class="modal-box">
-        
+
         {% block modal-logout %}
-            
+
         {% endblock modal-logout %}
-            
+
     </div>
 </header>

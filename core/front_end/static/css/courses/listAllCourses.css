@@ -8,15 +8,7 @@ img{
     display: block;
 }
 
-body:hover :not(:hover){
-    scale: 1;
-    transition: all 1s;
-    -webkit-transition: all 1s;
-    -moz-transition: all 1s;
-    -ms-transition: all 1s;
-    -o-transition: all 1s;
-    border: none;
-}
+
 
 .card-body .intro-courses:hover :not(:hover){
     scale: 0.9;
@@ -48,4 +40,5 @@ body:hover :not(:hover){
     -ms-transition: all 1s;
     -o-transition: all 1s;
 }
+
 

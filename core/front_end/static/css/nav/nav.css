@@ -1,0 +1,32 @@
+
+
+header .nav__header {
+    padding-left: 0;
+    overflow: hidden;
+}
+
+
+header .nav__header:hover :not(:hover){
+    scale: 0.9;
+    transition: all 1s;
+    -webkit-transition: all 1s;
+    -moz-transition: all 1s;
+    -ms-transition: all 1s;
+    -o-transition: all 1s;
+}
+
+header .nav__header :is(:hover){
+    scale: 1.1;
+    background-color: var(--color-btn-cta);
+    transition: all 1s;
+    -webkit-transition: all 1s;
+    -moz-transition: all 1s;
+    -ms-transition: all 1s;
+    -o-transition: all 1s;
+}
+
+header .nav__header li:hover a{
+    color: white !important;
+}
+
+

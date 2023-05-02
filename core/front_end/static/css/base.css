@@ -8,6 +8,10 @@
     --bg-slight: #D6DAF2;
     --font-open-sans: 'Open Sans', sans-serif;
 }
+html{
+    font-size: 17.6px;
+}
+
 
 body{
     background-color: var(--bg-body);
@@ -19,6 +23,7 @@ p{
 }
 ul{
     list-style: none;
+
 }
 a{
     text-decoration: none;
@@ -35,7 +40,4 @@ a{
     color: #e3f238;
 }
 
-img{
-    max-height: 233px;
-    object-fit: contain;
-}
+

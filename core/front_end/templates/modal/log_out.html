@@ -1,5 +1,6 @@
 {% extends 'templates/base/nav.html' %}
 {% load static %}
+
 {% block log-out %}
 
 {% if log_decision %}
@@ -21,18 +22,20 @@
             {{object_data}}
         </button>
         <ul class="dropdown-menu w-50" aria-labelledby="dropdownMenuButton1">
-            <li><a class="dropdown-item" href="#">
+            <li><a class="dropdown-item d-block d-flex px-0 align-items-center justify-content-around" href="{% url 'cart' slug='get-registered-course' reg_id='0' %}">
                     <span class="d-inline-block w-25 text-center"><i class="fa-solid fa-cart-shopping"></i></span>
-                    <span class="d-inline-block w-50 text-center">Cart</span>
-                    <span class="quantity"></span>
+                    <span class="d-inline-block w-25 text-center">Cart</span>
+                    <span class="quantity d-inline-block">{{num_cart}}</span>
                 </a></li>
-            <li><a class="dropdown-item" href="{% url 'profile' %}">
+            <li><a class="dropdown-item d-block d-flex px-0 align-items-center justify-content-around" href="{% url 'profile' %}">
                     <span class="d-inline-block w-25 text-center"><i class="fa-solid fa-user"></i></span>
-                    <span class="d-inline-block w-50 text-center">Profile</span>
+                    <span class="d-inline-block w-25 text-center">Profile</span>
+                    <span class="w-25"></span>
                 </a></li>
-            <li><a class="dropdown-item" href="{% url 'index' %}">
+            <li><a class="dropdown-item d-block d-flex px-0 align-items-center justify-content-around" href="{% url 'index' %}">
                     <span class="d-inline-block w-25 text-center"><i class="fa-solid fa-sign-out"></i></span>
-                    <span class="d-inline-block w-50 text-center">Log out</span>
+                    <span class="d-inline-block w-25 text-center">Log out</span>
+                    <span class="w-25"></span>
                 </a></li>
         </ul>
     </div>
@@ -40,7 +43,7 @@
 {% endif %}
 
 {% if mess_error %}
-    
+
 {% endif %}
 
 
@@ -106,24 +109,31 @@
                             <input type="text" class="form-control" id="formInputName" name="username">
                         </div>
                         <div class="mb-2">
-                            <label for="formInputEmail1" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="formInputEmail1" aria-describedby="emailHelp"
+                            <label for="formInputEmail" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="formInputEmail" aria-describedby="emailHelp"
                                 name="email">
                         </div>
                         <div class="mb-2">
-                            <label for="formInputPassword" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="formInputPassword" name="password">
+                            <label for="pw" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="pw" name="password">
                         </div>
                         <div class="mb-2">
                             <label for="formInputPasswordAgain" class="form-label">Password Again</label>
-                            <input type="password" class="form-control" id="formInputPasswordAgain" name="passwordAgain">
+                            <input type="password" class="form-control" id="formInputPasswordAgain"
+                                name="passwordAgain">
                         </div>
-                        <div class="my-3 dropend">
-                            <label for="cars" class="btn btn-outline-success dropdown-toggle" type="button" id="dropdownMenuRole" data-bs-toggle="dropdown" aria-expanded="false">Choose Role</label>
-                            <select name="role" class="dropdown-menu" aria-labelledby="dropdownMenuRole">
-                                <option value="user" class="dropdown-item">User</option>
-                                <option id ='admin-role' value="admin" class="dropdown-item">Admin</option>
-                            </select>
+
+                        <div class="mb-2">
+                            <div class="form-inline">
+                                <label class="my-1 mr-2" for="chooseRole">Preference</label>
+                                <select class="custom-select my-1 mr-sm-2" id="chooseRole" name="role">
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-2" id="codeConfirm">
+
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
