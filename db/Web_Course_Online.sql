@@ -54,12 +54,13 @@ CREATE TABLE courses (
 
 -- Create register_course table
 CREATE TABLE register_course (
-    register_id INT PRIMARY KEY,
+    register_id INT,
     user_id INT NOT NULL,
     course_id INT NOT NULL,
     register_date DATETIME NOT NULL,
     CONSTRAINT FK_register_course_users FOREIGN KEY (user_id) REFERENCES users(user_id),
-    CONSTRAINT FK_register_course_courses FOREIGN KEY (course_id) REFERENCES courses(course_id)
+    CONSTRAINT FK_register_course_courses FOREIGN KEY (course_id) REFERENCES courses(course_id),
+    PRIMARY KEY(user_id, register_date)
 );
 
 -- Create orders table

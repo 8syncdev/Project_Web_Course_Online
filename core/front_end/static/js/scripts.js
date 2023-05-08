@@ -36,7 +36,8 @@ function scrollToTop() {
 // Table Index:
 window.addEventListener('load', () => {
     const table = document.querySelectorAll('.idx')
-    table.forEach((item,index) => {
-        item.innerHTML = `<th>${index+1}</th>`
+    table.forEach((item, index) => {
+        item.innerHTML = `<th>${index + 1}</th>`
     })
 })
+

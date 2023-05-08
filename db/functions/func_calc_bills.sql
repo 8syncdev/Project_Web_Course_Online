@@ -23,39 +23,5 @@ BEGIN
 		SET @soTienKhoaHocDangKi = 0
 	RETURN @soTienKhoaHocDangKi
 END
---hàm xử lý kết quả thanh toán t thêm cái parameter @order_id để xác định order nào user muốn thanh toán
-GO
-CREATE OR ALTER   FUNCTION [dbo].[processTransaction] (@order_id int, @total_amount decimal(10, 2))
---trả về -1 nếu số tiền < 0, khi order_id không tồn tại, hoặc không tìm thấy order_items nào có @order_id
--- 0 nếu số tiền bé hơn tiền cần để thanh toán order
--- 1 nếu số tiền đủ để thanh toán
--- 2 nếu số tiền lớn hơn tiền cần để thanh toán
-RETURNS int
-AS
-BEGIN
-	IF(@total_amount <= 0)
-		RETURN -1
-	IF(@order_id in  (SELECT order_id FROM orders))
-		BEGIN
-		DECLARE @total_money_needed_for_order decimal(10, 2)
-		SET @total_money_needed_for_order = (SELECT SUM(price * quantity) FROM order_items WHERE order_id = @order_id)
-		IF(@total_money_needed_for_order is NULL)
-			BEGIN
-			RETURN -1
-			END
 
-		IF(@total_amount = @total_money_needed_for_order)
-			BEGIN
-			RETURN 1
-			END
-		IF(@total_amount < @total_money_needed_for_order)
-			BEGIN
-			RETURN 0
-			END
-		IF(@total_amount > @total_money_needed_for_order)
-			BEGIN
-			RETURN 2
-			END
-		END
-	RETURN -1
-END
+

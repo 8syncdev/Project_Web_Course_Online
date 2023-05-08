@@ -1,5 +1,5 @@
 
---Login Function
+--Login Function KO DUNG:
 CREATE OR ALTER FUNCTION LoginUser_Func (@username_or_email nvarchar(50), @password nvarchar(50))
 RETURNS int
 AS
@@ -12,3 +12,6 @@ BEGIN
 		RETURN 1
 	RETURN 0
 END
+
+
+

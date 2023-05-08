@@ -7,6 +7,9 @@ from django.db import connection
 from .data_files.images_data import images_data
 
 
+
+
+
 # Convert data from request.data :
 def convertDataReqToDict(data):
     data = dict(data)
@@ -30,6 +33,7 @@ def getNumUserRegisterCourses(user_id):
         cursor.execute(query, [user_id])
         data = dict_fetch_all(cursor)
     return data
+
 # Create your views here.
 # Global Variable For home_page:
 mess_error = False
@@ -37,6 +41,7 @@ log_decision = True
 object_data = None
 images_data = images_data
 num_cart = None
+role = None
 # Set up for maintaining Get request:
 def home_page(request): #
     global mess_error, log_decision, object_data, num_cart
@@ -77,12 +82,31 @@ def home_page(request): #
         elif len(data) == 3:
             with connection.cursor() as cursor:
                 query_func_login_user = """
-                    select dbo.LoginUser_Func(%s, %s) as check_log_in
+                    exec check_login %s,%s 
                 """
                 cursor.execute(query_func_login_user,data_POST)
                 check_log_in = dict_fetch_all(cursor)[0] # convert data query to dict (like Objects).
-            if check_log_in['check_log_in'] == 1: # Functions Check Login Return 0 Or 1:
-                print('Success')
+            if check_log_in['result'] == 2: # Functions Check Login Return 0 Or 1:
+                print('User Account')
+                with connection.cursor() as cursor:
+                    query = """
+                        EXEC grant_role_to_user 2, 'role_user'
+                    """
+                    cursor.execute(query)
+                log_decision = False
+                mess_error = False
+                print(data_POST) # Check data, we see ['email]
+                user = get_object_or_404(Users, email=data_POST[0])
+                object_data = user
+                num_cart = getNumUserRegisterCourses(user.user_id)[0]['num_cart']
+                print('Num of cart:',num_cart)
+                return redirect(f'/user/{user.user_id}')
+            elif check_log_in['result'] == 1:
+                with connection.cursor() as cursor:
+                    query = """
+                        EXEC grant_role_to_user 1, 'role_user'
+                    """
+                    cursor.execute(query)
                 log_decision = False
                 mess_error = False
                 print(data_POST) # Check data, we see ['email]
@@ -244,19 +268,19 @@ def list_all_mentors(request):
     })
 
 def register_courses(request, pk):
-    global mess_error, log_decision, object_data
+    global mess_error, log_decision, object_data, num_cart
     try:
-        id = object_data.user_id
+        user_id = object_data.user_id
         with connection.cursor() as cursor:
             query = """
                 exec RegisterUserCourse %s,%s
             """
-            cursor.execute(query,[id, pk])
+            cursor.execute(query,[user_id, pk])
+        num_cart = getNumUserRegisterCourses(user_id)[0]['num_cart']
         print('Success')
-        return redirect(f'/all-courses/all')
+        return redirect('/all-courses/all')
     except:
-        print('Error Register')
-        return redirect('/')
+        raise mess_error
 
 def cart_bill(request, slug, reg_id):
     global mess_error, log_decision, object_data, num_cart
@@ -289,13 +313,20 @@ def cart_bill(request, slug, reg_id):
             print('Error Access Bill')
             return redirect('/')
     if slug == 'delete-course':
-        id = object_data.user_id
-        with connection.cursor() as cursor:
-            query = '''
-                exec deleteUserCourseRegistry %s,%s
-            '''
-            cursor.execute(query,[id, reg_id])
-        print(id, reg_id)
+        try:
+            id = object_data.user_id
+            with connection.cursor() as cursor:
+                query = '''
+                    exec deleteUserCourseRegistry %s,%s
+                '''
+                cursor.execute(query,[id, reg_id])
+            num_cart = getNumUserRegisterCourses(id)[0]['num_cart'] 
+            print(id, reg_id)
+
+        except mess_error as err:
+            print(err)
+
+        
         return redirect('/cart-and-bill/get-registered-course/0')
 
             

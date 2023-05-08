@@ -27,12 +27,14 @@
 
 <body>
     <!-- Header -->
-   {% include 'templates/modal/log_out.html' with log=log_decision mess_error=mess_error object_data=object_data %}
+   {% include 'templates/modal/log_out.html'%}
     <!-- End Header -->
+    <!-- Content -->
     <main>
         {% block content %}
         {% endblock content %}
     </main>
+    <!-- End Content -->
     <!-- Footer -->
     {% include 'templates/base/footer.html' %}
     <!-- End Footer -->
