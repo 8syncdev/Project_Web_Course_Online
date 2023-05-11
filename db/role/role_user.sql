@@ -1,7 +1,7 @@
 -- Create the role
-GRANT CREATE TABLE TO [user];
 
 CREATE ROLE [user];
+
 
 -- Grant SELECT, INSERT, UPDATE, and DELETE permissions on the users table
 GRANT SELECT, INSERT, UPDATE, DELETE ON users TO [user];
@@ -21,14 +21,14 @@ GRANT SELECT ON level_courses TO [user];
 -- Grant SELECT permission on the courses table
 GRANT SELECT ON courses TO [user];
 
--- Grant SELECT, INSERT, UPDATE, DELETE permission on the register_course table
-GRANT SELECT, INSERT, UPDATE, DELETE ON register_course TO [user];
+-- Grant SELECT permission on the register_course table
+GRANT SELECT ON register_course TO [user];
 
--- Grant SELECT, INSERT, UPDATE, DELETE permission on the orders table
-GRANT SELECT, INSERT, UPDATE, DELETE ON orders TO [user];
+-- Grant SELECT permission on the orders table
+GRANT SELECT ON orders TO [user];
 
 -- Grant SELECT permission on the order_items table
-GRANT SELECT, INSERT, UPDATE, DELETE ON order_items TO [user];
+GRANT SELECT ON order_items TO [user];
 
 -- Grant SELECT permission on the categories table
 GRANT SELECT ON categories TO [user];
@@ -36,8 +36,8 @@ GRANT SELECT ON categories TO [user];
 -- Grant SELECT permission on the course_categories table
 GRANT SELECT ON course_categories TO [user];
 
--- Grant SELECT, INSERT, UPDATE, and DELETE permissions on the budget table
-GRANT SELECT, INSERT, UPDATE, DELETE ON budget TO [user];
+-- Grant SELECT IN permissions on the budget table
+GRANT SELECT ON budget TO [user];
 
 
 
@@ -50,21 +50,16 @@ GRANT SELECT ON v_master_courses_info TO [user];
 GRANT SELECT ON v_advanced_courses_info TO [user];
 GRANT SELECT ON v_latest_courses TO [user];
 GRANT SELECT ON v_courses_price_asc TO [user];
+GRANT SELECT ON v_course_price_descending TO [user];
 GRANT SELECT ON v_instructor TO [user];
 
 -- FUNCTION AND PROCEDURE: lưu ý table func là grant select
 -- STORE PROCEDURE:
 GRANT EXECUTE ON check_login TO [user];
-GRANT EXECUTE ON deleteUserCourseRegistry TO [user];
-GRANT EXECUTE ON RegisterUserCourse TO [user];
 GRANT EXECUTE ON DangKiAdmin_Proc TO [user];
 GRANT EXECUTE ON DangKiUser_Proc TO [user];
-GRANT EXECUTE ON grant_role_to_user TO [user];
--- SCALAR VALUED FUNCTIONS:
-GRANT EXECUTE ON getNumUserRegisterCourses TO [user];
-GRANT EXECUTE ON getTotalMoneyUserRegisterCourses TO [user];
--- TABLE VALUED FUNCTIONS:
-GRANT EXECUTE ON getUserRegisteredCourses TO [user];
+
+
 
 
 

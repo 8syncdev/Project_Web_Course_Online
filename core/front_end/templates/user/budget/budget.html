@@ -1,0 +1,46 @@
+{% extends 'templates/base/base.html' %}
+{% load static %}
+
+{% block head-title %}
+Wallet
+{% endblock head-title %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/user/budget.css' %}">
+{% endblock %}
+
+{% block content %}
+{% if check_budget==1 %}
+<div class="container wallet d-flex justify-content-center">
+    <form action="/" method="post" class="w-cus">
+        {% csrf_token %}
+        <div class="mb-2">
+            <label for="inputMoney" class="form-label">Money</label>
+            <input type="number" class="form-control" id="inputMoney"  name="money">
+        </div>
+        <div class="mb-2">
+            <label for="formInputPassword" class="form-label">Password Again</label>
+            <input type="password" class="form-control" id="formInputPassword" name="password">
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary w-50">Recharge</button>
+        </div>
+    </form>
+</div>
+{% else %}
+    <div class="container wallet d-flex justify-content-center">
+        <form action="/" method="post" class="w-cus">
+            {% csrf_token %}
+            <div class="mb-2">
+                <label for="inputEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="inputEmail" name="money">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary w-50">Open Wallet</button>
+            </div>
+        </form>
+    </div>
+{% endif %}
+{% endblock content %}

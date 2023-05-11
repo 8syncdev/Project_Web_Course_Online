@@ -7,7 +7,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 --procedure dang ki user
-ALTER   PROCEDURE [dbo].[DangKiUser_Proc]
+CREATE OR ALTER PROCEDURE [dbo].[DangKiUser_Proc]
 @username nvarchar(50), @email nvarchar(50), @password nvarchar(50), @passwordAgain nvarchar(50)
 AS
 BEGIN
@@ -37,7 +37,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-ALTER   PROCEDURE [dbo].[DangKiAdmin_Proc]
+CREATE OR ALTER PROCEDURE [dbo].[DangKiAdmin_Proc]
 @username nvarchar(50), @email nvarchar(50), @password nvarchar(50), @passwordAgain nvarchar(50)
 AS
 BEGIN

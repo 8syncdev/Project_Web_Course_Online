@@ -116,7 +116,7 @@ CONSTRAINT FK_budget_users FOREIGN KEY (user_id) REFERENCES users(user_id)
 -- Constraint:
 
 -- Add check constraint for amount field in budget table
-ALTER TABLE budget ADD CONSTRAINT CHK_budget_amount CHECK (amount > 0);
+ALTER TABLE budget ADD CONSTRAINT CHK_budget_amount CHECK (amount >= 0);
 
 -- Add NOT NULL constraint for start_date field in budget table
 ALTER TABLE budget ALTER COLUMN start_date DATETIME NOT NULL;

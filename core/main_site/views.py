@@ -5,11 +5,30 @@ from .models import Users, Courses
 from . import models
 from django.db import connection
 from .data_files.images_data import images_data
+from django.db import connections
 
 
 
+def add_admin_role():
+    with connections['admin'].cursor() as cursor:
+        query = '''
+            EXEC sp_addrolemember 'admin', 'account1';
+        '''
+        cursor.execute(query)
 
-
+def add_role_after_login():
+    with connections['admin'].cursor() as cursor:
+        query = '''
+            EXEC sp_addrolemember 'role_after_login', 'account1';
+        '''
+        cursor.execute(query)
+def log_out_role():
+    with connections['admin'].cursor() as cursor:
+        query = '''
+            EXEC sp_droprolemember 'role_after_login', 'account1';
+            EXEC sp_droprolemember 'admin', 'account1';
+        '''
+        cursor.execute(query)
 # Convert data from request.data :
 def convertDataReqToDict(data):
     data = dict(data)
@@ -87,12 +106,8 @@ def home_page(request): #
                 cursor.execute(query_func_login_user,data_POST)
                 check_log_in = dict_fetch_all(cursor)[0] # convert data query to dict (like Objects).
             if check_log_in['result'] == 2: # Functions Check Login Return 0 Or 1:
+                add_role_after_login()
                 print('User Account')
-                with connection.cursor() as cursor:
-                    query = """
-                        EXEC grant_role_to_user 2, 'role_user'
-                    """
-                    cursor.execute(query)
                 log_decision = False
                 mess_error = False
                 print(data_POST) # Check data, we see ['email]
@@ -102,11 +117,9 @@ def home_page(request): #
                 print('Num of cart:',num_cart)
                 return redirect(f'/user/{user.user_id}')
             elif check_log_in['result'] == 1:
-                with connection.cursor() as cursor:
-                    query = """
-                        EXEC grant_role_to_user 1, 'role_user'
-                    """
-                    cursor.execute(query)
+                add_role_after_login()
+                add_admin_role()
+                print('Admin Account')
                 log_decision = False
                 mess_error = False
                 print(data_POST) # Check data, we see ['email]
@@ -121,6 +134,7 @@ def home_page(request): #
                 object_data = None
                 return redirect('/')
     if request.method == 'GET': # GET http:
+        log_out_role()
         log_decision = True
         object_data = None
         if mess_error == True:
@@ -299,6 +313,7 @@ def cart_bill(request, slug, reg_id):
                 '''
                 cursor.execute(query,[id])
                 total_cost = dict_fetch_all(cursor)[0]['total_cost']
+                print(total_cost)
             print(data)
             print('Success')
             return render(request, 'templates/user/cart/cart.html',{
@@ -337,7 +352,41 @@ def cart_bill(request, slug, reg_id):
     #     'object_data': object_data,
     # })
 
-
+# Wallet:
+def wallet(request, params):
+    global mess_error, log_decision, object_data, num_cart
+    check_budget = None
+    data = request.POST
+    data_req = convertDataReqToDict(data_req)
+    print(data_req)
+    data_POST = [val.strip() for key, val in data_req.items() if key in ['password','money','email']]
+    print(data_POST)
+    id = object_data.user_id
+    with connection.cursor() as cursor:
+        query = """
+            SELECT dbo.HasWallet(%s) AS has_wallet;
+        """
+        cursor.execute(query,[id])
+        data = dict_fetch_all(cursor)
+    print(data)
+    if (check_budget is not None):
+        check_budget = data[0]['has_wallet']
+    if params == 'action-index':
+        return render(request,'templates/user/budget/budget.html',{
+            'log_decision': log_decision,
+            'mess_error': mess_error,
+            'object_data': object_data,
+            'num_cart':num_cart,
+            'check_budget':check_budget,
+        })
+    elif params == 'create-budget':
+        with connection.cursor() as cursor:
+            query="""
+                SELECT dbo.AddFunds(%s, %s) as add_fund;
+            """
+            cursor.execute(query, [id, ])
+    
+    return redirect('/')
 
 def test(request):
     obj = Users.objects.all()

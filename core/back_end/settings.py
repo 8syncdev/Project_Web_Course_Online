@@ -80,14 +80,23 @@ DATABASES = {
     "default": {
         "ENGINE": "mssql",
         "NAME": "Web_Course_Online",
-        "USER": "role_user",
+        "USER": "account1",
         "PASSWORD": "123",
-        "HOST": "DESKTOP-R57BPKR",
+        "HOST": "DESKTOP-KR6ULCD",
         "PORT": "",
         "OPTIONS": {"driver": "ODBC Driver 17 for SQL Server",
         },
     },
-
+    "admin": {
+        "ENGINE": "mssql",
+        "NAME": "Web_Course_Online",
+        "USER": "sa",
+        "PASSWORD": "123",
+        "HOST": "DESKTOP-KR6ULCD",
+        "PORT": "",
+        "OPTIONS": {"driver": "ODBC Driver 17 for SQL Server",
+        },
+    },
 }
 
 

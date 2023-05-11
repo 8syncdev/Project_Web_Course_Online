@@ -9,5 +9,6 @@ urlpatterns = [
     path('user-profile', views.profile, name='profile'),
     path('mentors', views.list_all_mentors,name='all-mentors'),
     path('register-courses/<pk>', views.register_courses, name="register"),
-    path('cart-and-bill/<slug:slug>/<str:reg_id>', views.cart_bill, name='cart')
+    path('cart-and-bill/<slug:slug>/<str:reg_id>', views.cart_bill, name='cart'),
+    path('wallet/<slug:params>',views.wallet, name='wallet')
 ]

@@ -17,11 +17,15 @@ CREATE OR ALTER   FUNCTION [dbo].[getTotalMoneyUserRegisterCourses] (@user_id in
 RETURNS decimal(10, 2)
 AS
 BEGIN
-	DECLARE @soTienKhoaHocDangKi decimal(10, 2)
-	SET @soTienKhoaHocDangKi = (SELECT SUM(B.price * B.quantity) FROM orders A join order_items B on A.user_id = @user_id and A.order_id = B.order_id and (A.payment_status_id = 1 OR A.payment_status_id = 2))
-	IF @soTienKhoaHocDangKi is null
-		SET @soTienKhoaHocDangKi = 0
-	RETURN @soTienKhoaHocDangKi
+	DECLARE @total_amount DECIMAL(10,2) = 0;
+
+    SELECT @total_amount = SUM(c.price)
+    FROM register_course rc
+    JOIN courses c ON rc.course_id = c.course_id
+    WHERE rc.user_id = @user_id;
+	IF @total_amount is NULL
+		RETURN 0;
+    RETURN @total_amount;
 END
 
 

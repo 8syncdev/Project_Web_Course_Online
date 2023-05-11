@@ -4,7 +4,7 @@
 
 GO
 CREATE OR ALTER PROCEDURE RegisterUserCourse
-@user_id int, @course_id int, @quantity int
+@user_id int, @course_id int, @quantity int = 1
 AS
 BEGIN
 	DECLARE @order_id int, @register_id int, @item_id int
