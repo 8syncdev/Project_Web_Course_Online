@@ -1,0 +1,119 @@
+-- CHECK LOGIN:
+CREATE OR ALTER PROCEDURE [dbo].[sp_check_login] 
+    @email VARCHAR(50),
+    @password VARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @user_id INT, @role_id INT;
+
+    -- Check if the user exists
+    SELECT @user_id = user_id
+    FROM users
+    WHERE email = @email AND password = @password;
+
+    IF @user_id IS NOT NULL
+    BEGIN
+        -- Check if the user is an admin
+        SELECT @role_id = role_id
+        FROM users_roles
+        WHERE user_id = @user_id AND role_id = 0;
+
+        IF @role_id = 0
+        BEGIN
+            -- User is an admin
+            SELECT 1 AS result;
+        END
+        ELSE
+        BEGIN
+            -- User is a regular user
+            SELECT 2 AS result;
+        END
+    END
+    ELSE
+    BEGIN
+        -- User is invalid
+        SELECT 0 AS result;
+    END
+END
+GO
+-- CREATE ADMIN ACCOUNT:
+CREATE OR ALTER PROCEDURE [dbo].[sp_reg_admin_account]
+@username nvarchar(50), @email nvarchar(50), @password nvarchar(50), @passwordAgain nvarchar(50)
+AS
+BEGIN
+	--username đã tồn tại hoặc email đã tồn tại
+	IF EXISTS (SELECT * FROM Users WHERE username = @username OR email = @email) OR @password != @passwordAgain
+	BEGIN
+	--code báo lỗi
+	print(N'Username hoặc email đã tồn tại')
+	END
+	--username và email đều chưa tồn tại --> tạo tài khoản mới
+	ELSE
+	BEGIN
+		DECLARE @user_id int
+		SET @user_id = (SELECT COUNT(user_id) + 1 FROM Users)
+		INSERT INTO Users(user_id, username, email, password, created_at, updated_at)
+		VALUES(@user_id ,@username, @email, @password, GETDATE(), GETDATE());
+		-- Phân quyền cho user_id là admin:
+		INSERT INTO users_roles(user_id, role_id) VALUES(@user_id,0); 
+	END
+END
+GO
+-- CREATE USER ACCOUNT:
+CREATE OR ALTER PROCEDURE [dbo].[sp_reg_user_account]
+@username nvarchar(50), @email nvarchar(50), @password nvarchar(50), @passwordAgain nvarchar(50)
+AS
+BEGIN
+	--username đã tồn tại hoặc email đã tồn tại
+	IF EXISTS (SELECT * FROM Users WHERE username = @username OR email = @email) OR @passwordAgain != @password
+	BEGIN
+	--code báo lỗi
+	print(N'Username hoặc email đã tồn tại')
+	END
+	--username và email đều chưa tồn tại --> tạo tài khoản mới
+	ELSE
+	BEGIN
+		DECLARE @user_id int
+		SET @user_id = (SELECT COUNT(user_id) + 1 FROM Users)
+		INSERT INTO Users(user_id, username, email, password, created_at, updated_at)
+		VALUES(@user_id ,@username, @email, @password, GETDATE(), GETDATE());
+		-- Phân quyền cho user_id là user:
+		INSERT INTO users_roles(user_id, role_id) VALUES(@user_id,1);
+	END
+END
+GO
+-- DELETE REGISTERED COURSES:
+CREATE OR ALTER PROCEDURE [dbo].[sp_delete_reg_courses]
+@user_id int, @register_id int
+AS 
+BEGIN
+	DELETE FROM register_course WHERE register_id = @register_id and user_id = @user_id --user_id = @user_id lược bỏ cũng đc vì register_id đã là PK
+END
+GO
+-- REGISTER COURSE:
+CREATE OR ALTER PROCEDURE [dbo].[sp_reg_courses]
+@user_id int, @course_id int, @quantity int = 1
+AS
+BEGIN
+	DECLARE @order_id int, @register_id int, @item_id int
+	SET @order_id =  (SELECT COUNT(order_id) + 1 FROM orders)
+	SET @register_id = (SELECT COUNT(register_id) + 1 FROM register_course)
+	SET @item_id = (SELECT COUNT(item_id) + 1 FROM order_items)
+
+	--thêm hàng mới vào register_course
+	INSERT INTO register_course(register_id, user_id, course_id, register_date)
+	VALUES (@register_id, @user_id, @course_id, GETDATE())
+
+	DECLARE @course_price DECIMAL(10,2)
+	SET @course_price = (SELECT price FROM courses where course_id = @course_id)
+
+	--thêm hàng mới vào orders
+	INSERT INTO orders(order_id, user_id, payment_status_id, order_date, total_amount)
+	VALUES(@order_id, @user_id, 1, GETDATE(), @course_price * @quantity)
+
+	--thêm hàng mới vào order_items
+	INSERT INTO order_items(item_id, order_id, course_id, price, quantity)
+	VALUES(@item_id, @order_id, @course_id, @course_price, @quantity)
+END

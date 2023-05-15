@@ -82,9 +82,10 @@ DATABASES = {
         "NAME": "Web_Course_Online",
         "USER": "account1",
         "PASSWORD": "123",
-        "HOST": "DESKTOP-KR6ULCD",
+        "HOST": "DESKTOP-R57BPKR",
         "PORT": "",
-        "OPTIONS": {"driver": "ODBC Driver 17 for SQL Server",
+        "OPTIONS": {
+            "driver": "ODBC Driver 17 for SQL Server",
         },
     },
     "admin": {
@@ -92,7 +93,7 @@ DATABASES = {
         "NAME": "Web_Course_Online",
         "USER": "sa",
         "PASSWORD": "123",
-        "HOST": "DESKTOP-KR6ULCD",
+        "HOST": "DESKTOP-R57BPKR",
         "PORT": "",
         "OPTIONS": {"driver": "ODBC Driver 17 for SQL Server",
         },

@@ -260,5 +260,8 @@ footer .second-part i{
     background-color: var(--color-btn-cta);
     color: var(--bg-body);
 }
-
+/* CSS EACH PART ROUTE */
+main .mentors{
+    min-height: 25rem;
+}
 

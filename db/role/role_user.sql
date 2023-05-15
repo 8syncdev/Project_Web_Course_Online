@@ -55,9 +55,16 @@ GRANT SELECT ON v_instructor TO [user];
 
 -- FUNCTION AND PROCEDURE: lưu ý table func là grant select
 -- STORE PROCEDURE:
-GRANT EXECUTE ON check_login TO [user];
-GRANT EXECUTE ON DangKiAdmin_Proc TO [user];
-GRANT EXECUTE ON DangKiUser_Proc TO [user];
+GRANT EXECUTE ON sp_check_login TO [user];
+GRANT EXECUTE ON sp_reg_admin_account TO [user];
+GRANT EXECUTE ON sp_reg_user_account TO [user];
+
+
+
+
+
+
+
 
 
 

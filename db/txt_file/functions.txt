@@ -1,0 +1,52 @@
+-- TABLE-VALUED FUNCTIONS:
+-- LIST ALL REGISTERED COURSE:
+CREATE OR ALTER FUNCTION [dbo].[func_list_all_reg_courses] (@user_id int)
+RETURNS @LopHocDangKi TABLE (course_id int, title nvarchar(255), description text, price decimal(10,2), instructor varchar(100), created_at datetime, updated_at datetime, level_name nvarchar(50), register_id int, register_date datetime)
+AS
+BEGIN
+	INSERT INTO @LopHocDangKi(course_id, title, description, price, instructor, created_at, updated_at, level_name, register_id, register_date)
+	select c.course_id, c.title, c.description, c.price, c.instructor, c.created_at, c.updated_at, level_name, register_id, register_date
+	from register_course r, courses c, level_courses l
+
+	where register_id in (SELECT register_id FROM register_course WHERE user_id = 1) and c.course_id = r.course_id and l.level_id = c.level_id
+	RETURN
+END
+GO
+-- SCALAR-VALUED FUNCTIONS:
+-- QUANTITY REGISTERED COURSE:
+CREATE OR ALTER FUNCTION [dbo].[func_num_reg_courses] (@user_id int)
+RETURNS int
+AS
+BEGIN
+	DECLARE @soLopDangKi int
+	SET @soLopDangKi = (SELECT COUNT(register_id) FROM register_course WHERE user_id = @user_id)
+	RETURN @soLopDangKi
+END
+GO
+-- TOTAL MONEY FOR REGISTERED COURSES:
+CREATE OR ALTER FUNCTION [dbo].[func_total_money_reg_courses] (@user_id int)
+RETURNS decimal(10, 2)
+AS
+BEGIN
+	DECLARE @total_amount DECIMAL(10,2) = 0;
+
+    SELECT @total_amount = SUM(c.price)
+    FROM register_course rc
+    JOIN courses c ON rc.course_id = c.course_id
+    WHERE rc.user_id = @user_id;
+	IF @total_amount is NULL
+		RETURN 0;
+    RETURN @total_amount;
+END
+GO
+-- CHECK WALLET IF EXIST RETURN 1 ELSE RETURN 0:
+CREATE OR ALTER FUNCTION [dbo].[func_check_wallet_exist](@user_id INT)
+RETURNS INT
+AS
+BEGIN
+    DECLARE @has_wallet INT;
+
+    SELECT @has_wallet = CASE WHEN EXISTS (SELECT 1 FROM budget WHERE user_id = @user_id) THEN 1 ELSE 0 END;
+
+    RETURN @has_wallet;
+END

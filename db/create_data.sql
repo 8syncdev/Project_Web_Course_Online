@@ -1,11 +1,11 @@
 -- Insert five tuples into the users table
 INSERT INTO users (user_id, username, email, password, created_at, updated_at)
 VALUES 
-    (1, 'john', 'john@example.com', 'password', '2022-01-01', NULL),
-    (2, 'jane', 'jane@example.com', 'password', '2022-01-01', NULL),
-    (3, 'bob', 'bob@example.com', 'password', '2022-01-01', NULL),
-    (4, 'alice', 'alice@example.com', 'password', '2022-01-01', NULL),
-    (5, 'sam', 'sam@example.com', 'password', '2022-01-01', NULL);
+    (1, 'john', 'john@example.com', '123', '2022-01-01', NULL),
+    (2, 'jane', 'jane@example.com', '123', '2022-01-01', NULL),
+    (3, 'bob', 'bob@example.com', '123', '2022-01-01', NULL),
+    (4, 'alice', 'alice@example.com', '123', '2022-01-01', NULL),
+    (5, 'sam', 'sam@example.com', '123', '2022-01-01', NULL);
 
 -- Insert five tuples into the roles table
 INSERT INTO roles (role_id, role_name)

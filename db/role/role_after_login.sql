@@ -15,12 +15,12 @@ GRANT INSERT, UPDATE ON budget TO [role_after_login];
 -- END GRANT TABLE
 
 -- STORE PROCEDURE AFTER LOGIN:
-GRANT EXECUTE ON deleteUserCourseRegistry TO [role_after_login];
-GRANT EXECUTE ON RegisterUserCourse TO [role_after_login];
+GRANT EXECUTE ON sp_delete_reg_courses TO [role_after_login];
+GRANT EXECUTE ON sp_reg_courses TO [role_after_login];
 -- SCALAR VALUED FUNCTIONS:
-GRANT EXECUTE ON getNumUserRegisterCourses TO [role_after_login];
-GRANT EXECUTE ON getTotalMoneyUserRegisterCourses TO [role_after_login];
-GRANT EXECUTE ON HasWallet TO [role_after_login];
+GRANT EXECUTE ON func_num_reg_courses TO [role_after_login];
+GRANT EXECUTE ON func_total_money_reg_courses TO [role_after_login];
+GRANT EXECUTE ON func_check_wallet_exist TO [role_after_login];
 
 -- TABLE VALUED FUNCTIONS:
-GRANT SELECT ON getUserRegisteredCourses TO [role_after_login];
+GRANT SELECT ON func_list_all_reg_courses TO [role_after_login];

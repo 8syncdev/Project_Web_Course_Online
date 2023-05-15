@@ -47,7 +47,7 @@ def dict_fetch_all(cursor):
 def getNumUserRegisterCourses(user_id):
     with connection.cursor() as cursor:
         query = '''
-            select dbo.getNumUserRegisterCourses(%s) as num_cart
+            select dbo.func_num_reg_courses(%s) as num_cart
         '''
         cursor.execute(query, [user_id])
         data = dict_fetch_all(cursor)
@@ -77,7 +77,7 @@ def home_page(request): #
             if data['role'] == 'user':
                 with connection.cursor() as cursor:
                     query_proc_regiser_user = """
-                        exec DangKiUser_Proc %s,%s,%s,%s
+                        exec sp_reg_user_account %s,%s,%s,%s
                     """
                     cursor.execute(query_proc_regiser_user,data_POST)
                     len_data_after_update = Users.objects.count()
@@ -88,7 +88,7 @@ def home_page(request): #
             elif data['role'] == 'admin':
                 with connection.cursor() as cursor:
                     query_proc_regiser_admin = """
-                        exec DangKiAdmin_Proc %s,%s,%s,%s
+                        exec sp_reg_admin_account %s,%s,%s,%s
                     """
                     cursor.execute(query_proc_regiser_admin,data_POST)
                     cursor.execute(query_proc_regiser_admin,data_POST)
@@ -101,7 +101,7 @@ def home_page(request): #
         elif len(data) == 3:
             with connection.cursor() as cursor:
                 query_func_login_user = """
-                    exec check_login %s,%s 
+                    exec sp_check_login %s,%s 
                 """
                 cursor.execute(query_func_login_user,data_POST)
                 check_log_in = dict_fetch_all(cursor)[0] # convert data query to dict (like Objects).
@@ -134,6 +134,11 @@ def home_page(request): #
                 object_data = None
                 return redirect('/')
     if request.method == 'GET': # GET http:
+        with connections['admin'].cursor() as cursor:
+            query = '''
+                EXEC sp_addrolemember 'user', 'account1';
+            '''
+            cursor.execute(query)
         log_out_role()
         log_decision = True
         object_data = None
@@ -142,6 +147,7 @@ def home_page(request): #
         else:
             mess_error = False
     print('Data:',object_data,log_decision, mess_error)
+    print(reverse_lazy('index'))
     return render(request, 'index.html', {
         'log_decision': log_decision,
         'mess_error': mess_error,
@@ -287,7 +293,7 @@ def register_courses(request, pk):
         user_id = object_data.user_id
         with connection.cursor() as cursor:
             query = """
-                exec RegisterUserCourse %s,%s
+                exec sp_reg_courses %s,%s
             """
             cursor.execute(query,[user_id, pk])
         num_cart = getNumUserRegisterCourses(user_id)[0]['num_cart']
@@ -304,12 +310,12 @@ def cart_bill(request, slug, reg_id):
             print(id)
             with connection.cursor() as cursor:
                 query = """
-                    select * from dbo.getUserRegisteredCourses(%s)
+                    select * from dbo.func_list_all_reg_courses(%s)
                 """
                 cursor.execute(query,[id])
                 data = dict_fetch_all(cursor)
                 query = '''
-                    select dbo.getTotalMoneyUserRegisterCourses(%s) as total_cost
+                    select dbo.func_total_money_reg_courses(%s) as total_cost
                 '''
                 cursor.execute(query,[id])
                 total_cost = dict_fetch_all(cursor)[0]['total_cost']
@@ -332,7 +338,7 @@ def cart_bill(request, slug, reg_id):
             id = object_data.user_id
             with connection.cursor() as cursor:
                 query = '''
-                    exec deleteUserCourseRegistry %s,%s
+                    exec sp_delete_reg_courses %s,%s
                 '''
                 cursor.execute(query,[id, reg_id])
             num_cart = getNumUserRegisterCourses(id)[0]['num_cart'] 
@@ -357,14 +363,15 @@ def wallet(request, params):
     global mess_error, log_decision, object_data, num_cart
     check_budget = None
     data = request.POST
-    data_req = convertDataReqToDict(data_req)
+    data_req = convertDataReqToDict(data)
     print(data_req)
     data_POST = [val.strip() for key, val in data_req.items() if key in ['password','money','email']]
     print(data_POST)
+    # Check wallet exist:
     id = object_data.user_id
     with connection.cursor() as cursor:
         query = """
-            SELECT dbo.HasWallet(%s) AS has_wallet;
+            SELECT dbo.func_check_wallet_exist(%s) AS has_wallet;
         """
         cursor.execute(query,[id])
         data = dict_fetch_all(cursor)
