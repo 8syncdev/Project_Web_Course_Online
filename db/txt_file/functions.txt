@@ -1,16 +1,141 @@
 -- TABLE-VALUED FUNCTIONS:
 -- LIST ALL REGISTERED COURSE:
-CREATE OR ALTER FUNCTION [dbo].[func_list_all_reg_courses] (@user_id int)
-RETURNS @LopHocDangKi TABLE (course_id int, title nvarchar(255), description text, price decimal(10,2), instructor varchar(100), created_at datetime, updated_at datetime, level_name nvarchar(50), register_id int, register_date datetime)
+CREATE OR ALTER FUNCTION [dbo].[func_list_all_paid_courses] (@user_id INT)
+RETURNS @LopHocDangKi TABLE (
+    course_id INT,
+    title NVARCHAR(255),
+    description NVARCHAR(MAX),
+    price DECIMAL(10,2),
+    instructor VARCHAR(100),
+    created_at DATETIME,
+    updated_at DATETIME,
+    level_name NVARCHAR(50),
+    register_id INT,
+    register_date DATETIME
+)
 AS
 BEGIN
-	INSERT INTO @LopHocDangKi(course_id, title, description, price, instructor, created_at, updated_at, level_name, register_id, register_date)
-	select c.course_id, c.title, c.description, c.price, c.instructor, c.created_at, c.updated_at, level_name, register_id, register_date
-	from register_course r, courses c, level_courses l
-
-	where register_id in (SELECT register_id FROM register_course WHERE user_id = 1) and c.course_id = r.course_id and l.level_id = c.level_id
-	RETURN
+    INSERT INTO @LopHocDangKi (
+        course_id,
+        title,
+        description,
+        price,
+        instructor,
+        created_at,
+        updated_at,
+        level_name,
+        register_id,
+        register_date
+    )
+    SELECT DISTINCT
+        c.course_id,
+        c.title,
+        CONVERT(NVARCHAR(MAX), c.description),
+        c.price,
+        c.instructor,
+        c.created_at,
+        c.updated_at,
+        l.level_name,
+        r.register_id,
+        r.register_date
+    FROM
+        (
+            SELECT
+                rc.register_id,
+                rc.register_date,
+                rc.course_id
+            FROM
+                register_course rc
+            WHERE
+                rc.user_id = @user_id
+        ) r
+        INNER JOIN courses c ON c.course_id = r.course_id
+        INNER JOIN level_courses l ON l.level_id = c.level_id
+        INNER JOIN orders o ON o.user_id = @user_id
+    WHERE
+        c.course_id NOT IN (
+            SELECT
+                oi.course_id
+            FROM
+                order_items oi
+                INNER JOIN orders o ON o.order_id = oi.order_id
+            WHERE
+                o.user_id = @user_id
+                AND o.payment_status_id <> 2
+        )
+        AND o.payment_status_id = 2;
+    
+    RETURN;
 END
+GO
+CREATE OR ALTER FUNCTION [dbo].[func_list_all_reg_courses] (@user_id INT)
+RETURNS @LopHocDangKi TABLE (
+    course_id INT,
+    title NVARCHAR(255),
+    description NVARCHAR(MAX),
+    price DECIMAL(10,2),
+    instructor VARCHAR(100),
+    created_at DATETIME,
+    updated_at DATETIME,
+    level_name NVARCHAR(50),
+    register_id INT,
+    register_date DATETIME
+)
+AS
+BEGIN
+    INSERT INTO @LopHocDangKi (
+        course_id,
+        title,
+        description,
+        price,
+        instructor,
+        created_at,
+        updated_at,
+        level_name,
+        register_id,
+        register_date
+    )
+    SELECT DISTINCT
+        c.course_id,
+        c.title,
+        CONVERT(NVARCHAR(MAX), c.description),
+        c.price,
+        c.instructor,
+        c.created_at,
+        c.updated_at,
+        l.level_name,
+        r.register_id,
+        r.register_date
+    FROM
+        (
+            SELECT
+                rc.register_id,
+                rc.register_date,
+                rc.course_id
+            FROM
+                register_course rc
+            WHERE
+                rc.user_id = @user_id
+        ) r
+        INNER JOIN courses c ON c.course_id = r.course_id
+        INNER JOIN level_courses l ON l.level_id = c.level_id
+        INNER JOIN orders o ON o.user_id = @user_id
+    WHERE
+        c.course_id NOT IN (
+            SELECT
+                oi.course_id
+            FROM
+                order_items oi
+                INNER JOIN orders o ON o.order_id = oi.order_id
+            WHERE
+                o.user_id = @user_id
+                AND o.payment_status_id = 2
+        )
+        AND o.payment_status_id <> 2;
+    
+    RETURN;
+END
+
 GO
 -- SCALAR-VALUED FUNCTIONS:
 -- QUANTITY REGISTERED COURSE:
@@ -18,9 +143,13 @@ CREATE OR ALTER FUNCTION [dbo].[func_num_reg_courses] (@user_id int)
 RETURNS int
 AS
 BEGIN
-	DECLARE @soLopDangKi int
-	SET @soLopDangKi = (SELECT COUNT(register_id) FROM register_course WHERE user_id = @user_id)
-	RETURN @soLopDangKi
+	DECLARE @Count INT;
+
+    SELECT @Count = COUNT(*)
+    FROM orders o
+    WHERE o.payment_status_id <> 2 and o.user_id = @user_id;
+
+    RETURN @Count;
 END
 GO
 -- TOTAL MONEY FOR REGISTERED COURSES:
@@ -30,10 +159,9 @@ AS
 BEGIN
 	DECLARE @total_amount DECIMAL(10,2) = 0;
 
-    SELECT @total_amount = SUM(c.price)
-    FROM register_course rc
-    JOIN courses c ON rc.course_id = c.course_id
-    WHERE rc.user_id = @user_id;
+    SELECT @total_amount = SUM(c.total_amount)
+    FROM orders c
+	WHERE c.payment_status_id <> 2
 	IF @total_amount is NULL
 		RETURN 0;
     RETURN @total_amount;
@@ -50,3 +178,17 @@ BEGIN
 
     RETURN @has_wallet;
 END
+GO
+CREATE OR ALTER FUNCTION [dbo].[func_get_current_money](@user_id INT)
+RETURNS DECIMAL(10,2)
+AS
+BEGIN
+    DECLARE @balance DECIMAL(10,2);
+
+    -- Lấy số tiền hiện tại trong túi của người dùng
+    SELECT @balance = amount
+    FROM budget
+    WHERE user_id = @user_id;
+
+    RETURN @balance;
+END;

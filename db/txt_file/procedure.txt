@@ -94,26 +94,197 @@ END
 GO
 -- REGISTER COURSE:
 CREATE OR ALTER PROCEDURE [dbo].[sp_reg_courses]
-@user_id int, @course_id int, @quantity int = 1
+@user_id int, @course_id int
 AS
 BEGIN
-	DECLARE @order_id int, @register_id int, @item_id int
-	SET @order_id =  (SELECT COUNT(order_id) + 1 FROM orders)
-	SET @register_id = (SELECT COUNT(register_id) + 1 FROM register_course)
-	SET @item_id = (SELECT COUNT(item_id) + 1 FROM order_items)
+    -- Kiểm tra xem người dùng đã đăng kí khóa học chưa
+    IF EXISTS (SELECT 1 FROM register_course WHERE user_id = @user_id AND course_id = @course_id)
+    BEGIN
+        SELECT 0 AS ERROR;
+        RETURN
+    END
 
-	--thêm hàng mới vào register_course
-	INSERT INTO register_course(register_id, user_id, course_id, register_date)
-	VALUES (@register_id, @user_id, @course_id, GETDATE())
+    -- Thêm hàng mới vào register_course
+    INSERT INTO register_course (register_id, user_id, course_id, register_date)
+    SELECT ISNULL(MAX(register_id), 0) + 1, @user_id, @course_id, GETDATE()
+    FROM register_course
 
-	DECLARE @course_price DECIMAL(10,2)
-	SET @course_price = (SELECT price FROM courses where course_id = @course_id)
+    -- Lấy giá khóa học
+    DECLARE @course_price DECIMAL(10, 2)
+    SELECT @course_price = price
+    FROM courses
+    WHERE course_id = @course_id
 
-	--thêm hàng mới vào orders
-	INSERT INTO orders(order_id, user_id, payment_status_id, order_date, total_amount)
-	VALUES(@order_id, @user_id, 1, GETDATE(), @course_price * @quantity)
+    -- Thêm hàng mới vào orders
+    DECLARE @order_id INT
+    INSERT INTO orders (order_id, user_id, payment_status_id, order_date, total_amount)
+    SELECT ISNULL(MAX(order_id), 0) + 1, @user_id, 1, GETDATE(), @course_price
+    FROM orders
 
-	--thêm hàng mới vào order_items
-	INSERT INTO order_items(item_id, order_id, course_id, price, quantity)
-	VALUES(@item_id, @order_id, @course_id, @course_price, @quantity)
+    -- Lấy order_id mới được tạo
+    ----SET @order_id = SCOPE_IDENTITY()
+    -- Thêm hàng mới vào order_items
+    INSERT INTO order_items (item_id, order_id, course_id, price, quantity)
+    VALUES ((SELECT ISNULL(MAX(item_id), 0) + 1 FROM order_items), (SELECT ISNULL(MAX(item_id), 0) + 1 FROM order_items), @course_id, @course_price, 1)
+	SELECT 1 AS SUCCESS;
 END
+--procedure nạp tiền vào ví
+GO
+CREATE OR ALTER PROCEDURE sp_deposit_budget
+@user_id int, @deposit_amount DECIMAL(10,2)
+AS
+BEGIN
+	--kiểm tra xem user đã có ví chưa, nếu chưa thì tạo -- phần này xóa cũng dc nếu ô cài cho ví tự tạo khi một tài khoản được đăng kí
+	if(@user_id not in (SELECT user_id from budget))
+		exec sp_create_budget @user_id
+	if(@deposit_amount > 0)
+		BEGIN
+			UPDATE budget
+			SET amount = amount + @deposit_amount
+			WHERE user_id = @user_id
+		END
+END
+GO
+-- create budget
+CREATE OR ALTER  PROCEDURE [dbo].[sp_create_budget]
+@user_id int
+as
+BEGIN
+	DECLARE @budget_id int
+	set @budget_id = (SELECT COUNT(budget_id) + 1 FROM budget)
+	if(@budget_id is NULL)
+		SET @budget_id = 0
+	INSERT INTO budget (budget_id, user_id, amount, start_date, end_date)
+	VALUES (@budget_id, @user_id, 0, GETDATE(), '3000-01-01 00:00:00.000')
+END
+--procedure set order thành đã thanh toán
+go
+CREATE OR ALTER PROCEDURE sp_set_payment_status_to_paid
+@order_id int
+as
+BEGIN
+	if(@order_id in (SELECT order_id from orders))
+		BEGIN
+			UPDATE orders
+			SET payment_status_id = 2
+			WHERE order_id = @order_id
+		END
+END
+--procedure trừ tiền trong budget
+GO
+CREATE OR ALTER PROCEDURE sp_deduct_from_budget
+@user_id int, @deduction_amount decimal(10,2)
+as
+BEGIN
+	IF(@user_id in (SELECT user_id from budget))
+		BEGIN
+			UPDATE budget
+			SET amount = amount - @deduction_amount
+			WHERE user_id = @user_id
+		END
+END
+GO
+--procedure thực hiện giao dịch
+CREATE OR ALTER PROCEDURE sp_processTransactionProc
+@user_id int, @order_id int
+as
+BEGIN
+	--nếu có lỗi sẽ rollback và hủy thực thi tất cả các dòng lệnh
+	SET XACT_ABORT ON
+	DECLARE @payment_status_id int
+	SET @payment_status_id = (SELECT payment_status_id from orders where order_id = @order_id)
+	--check xem order này đã thanh toán chưa
+	if(@payment_status_id = 1 or @payment_status_id = 5)
+	BEGIN
+		DECLARE @total_money_needed_for_order decimal(10, 2)
+		SET @total_money_needed_for_order = (SELECT SUM(price * quantity) FROM order_items WHERE order_id = @order_id)
+		if(@total_money_needed_for_order is not NULL)
+		BEGIN 
+			DECLARE @budget_total_money decimal(10, 2)
+			SET @budget_total_money = (SELECT amount from budget where user_id = @user_id)
+			if(@budget_total_money >= @total_money_needed_for_order)
+			BEGIN
+				BEGIN TRAN
+				exec sp_deduct_from_budget @user_id, @total_money_needed_for_order
+				exec sp_set_payment_status_to_paid @order_id
+				COMMIT
+			END
+		END
+		ELSE
+			--thông báo không đủ tiền trong ví
+			print('Insufficient money in budget!')
+	END
+	ELSE
+		print('This order has been paid!')
+	SET XACT_ABORT OFF
+END
+--ham loop goi processTransaction cho tung order cua user
+GO
+CREATE OR ALTER procedure sp_Loop_TransactionForAllOrders
+@user_id int
+AS
+BEGIN
+	DECLARE @MyCursor CURSOR;
+	DECLARE @MyField int;
+	BEGIN
+		SET @MyCursor = CURSOR FOR
+		select top 1000 order_id from orders
+		    where user_id = @user_id      
+	
+		OPEN @MyCursor 
+		FETCH NEXT FROM @MyCursor 
+		INTO @MyField
+
+		WHILE @@FETCH_STATUS = 0
+		BEGIN
+		  exec sp_processTransactionProc @user_id, @MyField
+		  FETCH NEXT FROM @MyCursor 
+		  INTO @MyField 
+		END; 
+	
+		CLOSE @MyCursor ;
+		DEALLOCATE @MyCursor;
+	END;
+END
+--ham thuc hien thanh toan tat ca cac khoa hoc cho user
+GO
+CREATE OR ALTER PROCEDURE sp_processTransactionForAllOrders
+@user_id int
+as
+BEGIN
+	--tinh tong so tien cua cac khoa hoc
+	DECLARE @total_money_needed_for_order decimal(10, 2)
+	SET @total_money_needed_for_order = 
+	(SELECT SUM(A.price * quantity) 
+	FROM order_items A join 
+	(SELECT order_id FROM orders 
+	WHERE user_id = @user_id and (payment_status_id = 1 or payment_status_id = 5) ) B 
+	on A.order_id = B.order_id)
+
+	if(@total_money_needed_for_order is not NULL)
+		BEGIN 
+			--kiem tra trong vi user co du tien hay k
+			DECLARE @budget_total_money decimal(10, 2)
+			SET @budget_total_money = (SELECT amount from budget where user_id = @user_id)
+			--neu du se goi proc loop de thuc hien giao dich
+			if(@budget_total_money >= @total_money_needed_for_order)
+			BEGIN
+				EXEC sp_Loop_TransactionForAllOrders @user_id
+			END
+			ELSE
+				print('Insufficient money in budget!')
+		END
+END
+
+exec sp_processTransactionForAllOrders 1
+GO 
+Select * From orders
+Select * From order_items
+Select * From budget
+Select * From register_course
+
+GRANT EXECUTE ON sp_set_payment_status_to_paid TO [role_after_login];
+GRANT EXECUTE ON sp_deduct_from_budget TO [role_after_login];
+GRANT EXECUTE ON sp_processTransactionProc TO [role_after_login];
+GRANT EXECUTE ON sp_Loop_TransactionForAllOrders TO [role_after_login];
+GRANT EXECUTE ON sp_processTransactionForAllOrders TO [role_after_login];
