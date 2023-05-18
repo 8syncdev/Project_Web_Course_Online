@@ -9,7 +9,6 @@ img{
 }
 
 
-
 .card-body .intro-courses:hover :not(:hover){
     scale: 0.9;
     transition: all 0.7s;

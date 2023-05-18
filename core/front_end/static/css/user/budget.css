@@ -1,6 +1,31 @@
-.wallet{
-    min-height: 15rem;
+body>main>div>div>div:nth-child(1)>div>span{
+    font-size: 2rem;
+    font-weight: bold;
+    background-color: #333;
+    display: inline-block;
+    height: 12rem;
+    width: 12rem;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+    padding-top: 4.5rem;
+    bottom: -1rem;
+    right: 1rem;
+    color: #fafafa;
+    opacity: 0.9;
 }
-.w-cus{
-    height: 15rem;
+
+.wallet .img-cus{
+    border: 2px solid #333;
+    border-radius: 0.7rem;
+    -webkit-border-radius: 0.7rem;
+    -moz-border-radius: 0.7rem;
+    -ms-border-radius: 0.7rem;
+    -o-border-radius: 0.7rem;
+}
+
+.wallet{
+    padding-bottom: 5rem;
 }

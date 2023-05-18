@@ -1,0 +1,63 @@
+{% extends 'templates/base/base.html' %}
+{% load static %}
+
+{% block head-title %}
+My Courses
+{% endblock head-title %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/courses/listAllCourses.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="controler mt-3 pb-5 d-flex flex-wrap align-items-centers py-3">
+        <p class="inner-title fs-2 fw-bold text-dark">My Courses</p>
+    </div>
+    <div class="row row-col-xl-3 row-col-lg-3 row-cols-md-2 row-cols-1">
+        {% for item in data %}
+        <div class="fix-size col-xl-4 col-lg-6 col-md-12 col-12 mb-3 wow fadeIn
+        " data-wow-duration="2s">
+            <div class="inner-card card">
+                <img src="
+                    {% for key,val in images_data.items %}
+                        {% if key == item.title %}
+                            {% static val %}
+                        {% endif %}
+                    {% endfor %}
+                " alt="" class="rounded-5">
+                <div class="card-body">
+                    <div class="intro-courses mb-1">
+                        <div class="item p-2 rounded">
+                            <p class="my-auto"><span class="fw-bold fs-5 text-dark">Name Course: </span>{{item.title}}
+                            </p>
+                        </div>
+                        <div class="item p-2 rounded">
+                            <p class="my-auto"><span class="fw-bold fs-5 text-dark">Category:
+                                </span>{{item.category_names}}</p>
+                        </div>
+                        <div class="item p-2 rounded">
+                            <p class="card-text my-auto"><span class="fw-bold fs-5 text-dark">Description:
+                                </span>{{item.description}}</p>
+                        </div>
+                        <div class="item p-2 rounded">
+                            <p class="card-text my-auto"><span class="fw-bold fs-5 text-dark">Created Date:
+                                </span>{{item.created_at|date}}</p>
+                        </div>
+                        <div class="item p-2 rounded">
+                            <p class="card-text my-auto"><span class="fw-bold fs-5 text-dark">Price:
+                                </span>{{item.price}}</p>
+                        </div>
+                    </div>
+                    <div class="btn-cta text-end">
+                        <a href="{% url 'register' pk=item.course_id %}" class="btn btn-primary btn-lg">Watch Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}

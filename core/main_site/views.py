@@ -43,7 +43,7 @@ def dict_fetch_all(cursor):
         dict(zip([col[0] for col in desc], row))
         for row in cursor.fetchall()
     ]
-
+# Convert SQl sp,func to python def :
 def getNumUserRegisterCourses(user_id):
     with connection.cursor() as cursor:
         query = '''
@@ -52,6 +52,34 @@ def getNumUserRegisterCourses(user_id):
         cursor.execute(query, [user_id])
         data = dict_fetch_all(cursor)
     return data
+def getTotalMoneyRegCourses(user_id):
+    with connection.cursor() as cursor:
+        query = '''
+            select dbo.func_total_money_reg_courses(%s) as total_cost
+        '''
+        cursor.execute(query,[user_id])
+        total_cost = dict_fetch_all(cursor)[0]['total_cost']
+    return total_cost
+
+def check_wallet(user_id):
+    with connection.cursor() as cursor:
+        query = """
+            SELECT dbo.func_check_wallet_exist(%s) AS has_wallet;
+        """
+        cursor.execute(query,[user_id])
+        data = dict_fetch_all(cursor)
+    print(data)
+    if (data[0]['has_wallet'] == 1):
+        return 1
+    return 0
+def getCurrentMoney(user_id):
+    with connection.cursor() as cursor:
+        query = """
+            SELECT dbo.func_get_current_money(%s) As current_money 
+        """
+        cursor.execute(query,[user_id])
+        data = dict_fetch_all(cursor)
+    return data[0]['current_money']
 
 # Create your views here.
 # Global Variable For home_page:
@@ -63,7 +91,7 @@ num_cart = None
 role = None
 # Set up for maintaining Get request:
 def home_page(request): #
-    global mess_error, log_decision, object_data, num_cart
+    global mess_error, log_decision, object_data, num_cart, role
     if request.method == 'POST':
         data = request.POST
         # See all data from request POST.
@@ -83,7 +111,8 @@ def home_page(request): #
                     len_data_after_update = Users.objects.count()
                     if len_data_after_update == len_data_before_register:
                         mess_error = True
-                    else: mess_error = False
+                    else: 
+                        mess_error = False
                 return redirect('/')
             elif data['role'] == 'admin':
                 with connection.cursor() as cursor:
@@ -95,7 +124,8 @@ def home_page(request): #
                     len_data_after_update = Users.objects.count()
                     if len_data_after_update == len_data_before_register:
                         mess_error = True
-                    else: mess_error = False
+                    else: 
+                        mess_error = False
                 return redirect('/')
            
         elif len(data) == 3:
@@ -106,6 +136,7 @@ def home_page(request): #
                 cursor.execute(query_func_login_user,data_POST)
                 check_log_in = dict_fetch_all(cursor)[0] # convert data query to dict (like Objects).
             if check_log_in['result'] == 2: # Functions Check Login Return 0 Or 1:
+                role = 'user'
                 add_role_after_login()
                 print('User Account')
                 log_decision = False
@@ -117,6 +148,7 @@ def home_page(request): #
                 print('Num of cart:',num_cart)
                 return redirect(f'/user/{user.user_id}')
             elif check_log_in['result'] == 1:
+                role = 'admin'
                 add_role_after_login()
                 add_admin_role()
                 print('Admin Account')
@@ -151,7 +183,8 @@ def home_page(request): #
     return render(request, 'index.html', {
         'log_decision': log_decision,
         'mess_error': mess_error,
-        'object_data': object_data
+        'object_data': object_data,
+        'role': role,
     })
 # User After Login:
 def page_user_login(request, pk):
@@ -314,11 +347,7 @@ def cart_bill(request, slug, reg_id):
                 """
                 cursor.execute(query,[id])
                 data = dict_fetch_all(cursor)
-                query = '''
-                    select dbo.func_total_money_reg_courses(%s) as total_cost
-                '''
-                cursor.execute(query,[id])
-                total_cost = dict_fetch_all(cursor)[0]['total_cost']
+                total_cost = getTotalMoneyRegCourses(id)
                 print(total_cost)
             print(data)
             print('Success')
@@ -330,10 +359,9 @@ def cart_bill(request, slug, reg_id):
                 'num_cart':num_cart,
                 'total_cost':total_cost
             })
-        except:
-            print('Error Access Bill')
-            return redirect('/')
-    if slug == 'delete-course':
+        except mess_error as err:
+            print(err)
+    elif slug == 'delete-course':
         try:
             id = object_data.user_id
             with connection.cursor() as cursor:
@@ -346,11 +374,23 @@ def cart_bill(request, slug, reg_id):
 
         except mess_error as err:
             print(err)
-
-        
         return redirect('/cart-and-bill/get-registered-course/0')
 
-            
+    elif slug == 'paid':
+        try:
+            id = object_data.user_id
+            with connection.cursor() as cursor:
+                query = """
+                    exec sp_processTransactionForAllOrders %s
+                """
+                cursor.execute(query,[id])
+            num_cart = getNumUserRegisterCourses(id)[0]['num_cart'] 
+            print(id, reg_id)
+
+        except mess_error as err:
+            print(err)
+        return redirect('/cart-and-bill/get-registered-course/0')
+
     return redirect('/')
     # return render(request, 'templates/user/cart/cart.html',{
     #     'log_decision': log_decision,
@@ -365,19 +405,13 @@ def wallet(request, params):
     data = request.POST
     data_req = convertDataReqToDict(data)
     print(data_req)
-    data_POST = [val.strip() for key, val in data_req.items() if key in ['password','money','email']]
+    data_POST = [val.strip() for key, val in data_req.items() if key == 'money']
     print(data_POST)
     # Check wallet exist:
     id = object_data.user_id
-    with connection.cursor() as cursor:
-        query = """
-            SELECT dbo.func_check_wallet_exist(%s) AS has_wallet;
-        """
-        cursor.execute(query,[id])
-        data = dict_fetch_all(cursor)
-    print(data)
-    if (check_budget is not None):
-        check_budget = data[0]['has_wallet']
+    check_budget = check_wallet(id)
+    # Get current money:
+    current_money = getCurrentMoney(id)
     if params == 'action-index':
         return render(request,'templates/user/budget/budget.html',{
             'log_decision': log_decision,
@@ -385,15 +419,45 @@ def wallet(request, params):
             'object_data': object_data,
             'num_cart':num_cart,
             'check_budget':check_budget,
+            'current_money':current_money,
         })
     elif params == 'create-budget':
         with connection.cursor() as cursor:
             query="""
-                SELECT dbo.AddFunds(%s, %s) as add_fund;
+                exec sp_create_budget %s;
             """
-            cursor.execute(query, [id, ])
-    
+            cursor.execute(query, [id])
+        return redirect(reverse_lazy('wallet', kwargs={'params':'action-index'}))
+    elif params == 'deposit-budget':
+        with connection.cursor() as cursor:
+            query="""
+                exec sp_deposit_budget %s,%s;
+            """
+            cursor.execute(query, [id, data_POST[0]])
+        return redirect(reverse_lazy('wallet', kwargs={'params':'action-index'}))
     return redirect('/')
+
+# Paid Courses:
+def paid_courses(request):
+    global mess_error, log_decision, object_data, num_cart, images_data
+    try:
+        id = object_data.user_id
+        with connection.cursor() as cursor:
+            query = '''
+                select * from func_list_all_paid_courses(%s)
+            '''
+            cursor.execute(query, [id])
+            data = dict_fetch_all(cursor)
+        return render(request,'templates/user/paid_courses/paid_courses.html',{
+            'log_decision': log_decision,
+            'mess_error': mess_error,
+            'object_data': object_data,
+            'num_cart':num_cart,
+            'images_data': images_data,
+            'data': data,
+        })
+    except:
+        raise ValueError('paid-courses ERROR')
 
 def test(request):
     obj = Users.objects.all()

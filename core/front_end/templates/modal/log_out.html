@@ -22,22 +22,32 @@
             {{object_data}}
         </button>
         <ul class="dropdown-menu w-50" aria-labelledby="dropdownMenuButton1">
-            <li><a class="dropdown-item d-block d-flex px-0 align-items-center justify-content-around" href="{% url 'cart' slug='get-registered-course' reg_id='0' %}">
+            <li><a class="dropdown-item d-block d-flex px-0 align-items-center justify-content-around"
+                    href="{% url 'cart' slug='get-registered-course' reg_id='0' %}">
                     <span class="d-inline-block w-25 text-center"><i class="fa-solid fa-cart-shopping"></i></span>
                     <span class="d-inline-block w-25 text-center">Cart</span>
                     <span class="quantity d-inline-block">{{num_cart}}</span>
                 </a></li>
-            <li><a class="dropdown-item d-block d-flex px-0 align-items-center justify-content-around" href="{% url 'profile' %}">
+            <li><a class="dropdown-item d-block d-flex px-0 align-items-center justify-content-around"
+                    href="{% url 'profile' %}">
                     <span class="d-inline-block w-25 text-center"><i class="fa-solid fa-user"></i></span>
                     <span class="d-inline-block w-25 text-center">Profile</span>
                     <span class="w-25"></span>
                 </a></li>
-            <li><a class="dropdown-item d-block d-flex px-0 align-items-center justify-content-around" href="{% url 'wallet' params='action-index' %}">
+            <li><a class="dropdown-item d-block d-flex px-0 align-items-center justify-content-around"
+                    href="{% url 'wallet' params='action-index' %}">
                     <span class="d-inline-block w-25 text-center"><i class="fa-solid fa-wallet"></i></span>
                     <span class="d-inline-block w-25 text-center">Wallet</span>
                     <span class="w-25"></span>
                 </a></li>
-            <li><a class="dropdown-item d-block d-flex px-0 align-items-center justify-content-around" href="{% url 'index' %}">
+            <li><a class="dropdown-item d-block d-flex px-0 align-items-center justify-content-around"
+                    href="{% url 'paid-courses' %}">
+                    <span class="d-inline-block w-25 text-center"><i class="fa-solid fa-chalkboard"></i></span>
+                    <span class="d-inline-block w-25 text-center">My Course</span>
+                    <span class="w-25"></span>
+                </a></li>
+            <li><a class="dropdown-item d-block d-flex px-0 align-items-center justify-content-around"
+                    href="{% url 'index' %}">
                     <span class="d-inline-block w-25 text-center"><i class="fa-solid fa-sign-out"></i></span>
                     <span class="d-inline-block w-25 text-center">Log out</span>
                     <span class="w-25"></span>

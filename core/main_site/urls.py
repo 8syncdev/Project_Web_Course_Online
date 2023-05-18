@@ -12,5 +12,6 @@ urlpatterns = [
     path('mentors', views.list_all_mentors,name='all-mentors'),
     path('register-courses/<pk>', views.register_courses, name="register"),
     path('cart-and-bill/<slug:slug>/<str:reg_id>', views.cart_bill, name='cart'),
-    path('wallet/<slug:params>',views.wallet, name='wallet')
+    path('wallet/<slug:params>',views.wallet, name='wallet'),
+    path('paid-courses', views.paid_courses, name='paid-courses')
 ]
