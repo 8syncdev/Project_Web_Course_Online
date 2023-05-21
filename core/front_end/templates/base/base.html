@@ -25,12 +25,12 @@
     {% endblock %}
 </head>
 
-<body>
+<body class="{% if role == 'admin' %} body-admin {% endif %}">
     <!-- Header -->
    {% include 'templates/modal/log_out.html'%}
     <!-- End Header -->
     <!-- Content -->
-    <main>
+    <main class="{% if role == 'admin' %} main-admin {% endif %}">
         {% block content %}
         {% endblock content %}
     </main>

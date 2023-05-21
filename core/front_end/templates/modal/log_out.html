@@ -46,12 +46,21 @@
                     <span class="d-inline-block w-25 text-center">My Course</span>
                     <span class="w-25"></span>
                 </a></li>
+            {% if role == 'admin' %}
+                <li><a class="dropdown-item d-block d-flex px-0 align-items-center justify-content-around"
+                    href="{% url 'admin' pk=object_data.user_id params='action-index' options='all-user' %}">
+                    <span class="d-inline-block w-25 text-center"><i class="fa-solid fa-globe"></i></span>
+                    <span class="d-inline-block w-25 text-center fw-bold">Dash Board</span>
+                    <span class="w-25"></span>
+                </a></li>
+            {% endif %}
             <li><a class="dropdown-item d-block d-flex px-0 align-items-center justify-content-around"
                     href="{% url 'index' %}">
                     <span class="d-inline-block w-25 text-center"><i class="fa-solid fa-sign-out"></i></span>
                     <span class="d-inline-block w-25 text-center">Log out</span>
                     <span class="w-25"></span>
                 </a></li>
+            
         </ul>
     </div>
 </div>

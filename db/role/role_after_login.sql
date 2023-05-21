@@ -1,3 +1,4 @@
+-- CREATE AFTER LOGIN ROLE:
 CREATE ROLE [role_after_login];
 -- GRANT TABLE:
 -- Grant INSERT, UPDATE, DELETE permission on the register_course table

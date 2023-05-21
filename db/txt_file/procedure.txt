@@ -38,115 +38,8 @@ BEGIN
     END
 END
 GO
--- CREATE ADMIN ACCOUNT:
-CREATE OR ALTER PROCEDURE [dbo].[sp_reg_admin_account]
-@username nvarchar(50), @email nvarchar(50), @password nvarchar(50), @passwordAgain nvarchar(50)
-AS
-BEGIN
-	--username đã tồn tại hoặc email đã tồn tại
-	IF EXISTS (SELECT * FROM Users WHERE username = @username OR email = @email) OR @password != @passwordAgain
-	BEGIN
-	--code báo lỗi
-	print(N'Username hoặc email đã tồn tại')
-	END
-	--username và email đều chưa tồn tại --> tạo tài khoản mới
-	ELSE
-	BEGIN
-		DECLARE @user_id int
-		SET @user_id = (SELECT COUNT(user_id) + 1 FROM Users)
-		INSERT INTO Users(user_id, username, email, password, created_at, updated_at)
-		VALUES(@user_id ,@username, @email, @password, GETDATE(), GETDATE());
-		-- Phân quyền cho user_id là admin:
-		INSERT INTO users_roles(user_id, role_id) VALUES(@user_id,0); 
-	END
-END
-GO
--- CREATE USER ACCOUNT:
-CREATE OR ALTER PROCEDURE [dbo].[sp_reg_user_account]
-@username nvarchar(50), @email nvarchar(50), @password nvarchar(50), @passwordAgain nvarchar(50)
-AS
-BEGIN
-	--username đã tồn tại hoặc email đã tồn tại
-	IF EXISTS (SELECT * FROM Users WHERE username = @username OR email = @email) OR @passwordAgain != @password
-	BEGIN
-	--code báo lỗi
-	print(N'Username hoặc email đã tồn tại')
-	END
-	--username và email đều chưa tồn tại --> tạo tài khoản mới
-	ELSE
-	BEGIN
-		DECLARE @user_id int
-		SET @user_id = (SELECT COUNT(user_id) + 1 FROM Users)
-		INSERT INTO Users(user_id, username, email, password, created_at, updated_at)
-		VALUES(@user_id ,@username, @email, @password, GETDATE(), GETDATE());
-		-- Phân quyền cho user_id là user:
-		INSERT INTO users_roles(user_id, role_id) VALUES(@user_id,1);
-	END
-END
-GO
--- DELETE REGISTERED COURSES:
-CREATE OR ALTER PROCEDURE [dbo].[sp_delete_reg_courses]
-@user_id int, @register_id int
-AS 
-BEGIN
-	DELETE FROM register_course WHERE register_id = @register_id and user_id = @user_id --user_id = @user_id lược bỏ cũng đc vì register_id đã là PK
-END
-GO
--- REGISTER COURSE:
-CREATE OR ALTER PROCEDURE [dbo].[sp_reg_courses]
-@user_id int, @course_id int
-AS
-BEGIN
-    -- Kiểm tra xem người dùng đã đăng kí khóa học chưa
-    IF EXISTS (SELECT 1 FROM register_course WHERE user_id = @user_id AND course_id = @course_id)
-    BEGIN
-        SELECT 0 AS ERROR;
-        RETURN
-    END
-
-    -- Thêm hàng mới vào register_course
-    INSERT INTO register_course (register_id, user_id, course_id, register_date)
-    SELECT ISNULL(MAX(register_id), 0) + 1, @user_id, @course_id, GETDATE()
-    FROM register_course
-
-    -- Lấy giá khóa học
-    DECLARE @course_price DECIMAL(10, 2)
-    SELECT @course_price = price
-    FROM courses
-    WHERE course_id = @course_id
-
-    -- Thêm hàng mới vào orders
-    DECLARE @order_id INT
-    INSERT INTO orders (order_id, user_id, payment_status_id, order_date, total_amount)
-    SELECT ISNULL(MAX(order_id), 0) + 1, @user_id, 1, GETDATE(), @course_price
-    FROM orders
-
-    -- Lấy order_id mới được tạo
-    ----SET @order_id = SCOPE_IDENTITY()
-    -- Thêm hàng mới vào order_items
-    INSERT INTO order_items (item_id, order_id, course_id, price, quantity)
-    VALUES ((SELECT ISNULL(MAX(item_id), 0) + 1 FROM order_items), (SELECT ISNULL(MAX(item_id), 0) + 1 FROM order_items), @course_id, @course_price, 1)
-	SELECT 1 AS SUCCESS;
-END
---procedure nạp tiền vào ví
-GO
-CREATE OR ALTER PROCEDURE sp_deposit_budget
-@user_id int, @deposit_amount DECIMAL(10,2)
-AS
-BEGIN
-	--kiểm tra xem user đã có ví chưa, nếu chưa thì tạo -- phần này xóa cũng dc nếu ô cài cho ví tự tạo khi một tài khoản được đăng kí
-	if(@user_id not in (SELECT user_id from budget))
-		exec sp_create_budget @user_id
-	if(@deposit_amount > 0)
-		BEGIN
-			UPDATE budget
-			SET amount = amount + @deposit_amount
-			WHERE user_id = @user_id
-		END
-END
-GO
--- create budget
-CREATE OR ALTER  PROCEDURE [dbo].[sp_create_budget]
+-- CREATE BUDGET:
+CREATE OR ALTER   PROCEDURE [dbo].[sp_create_budget]
 @user_id int
 as
 BEGIN
@@ -157,22 +50,9 @@ BEGIN
 	INSERT INTO budget (budget_id, user_id, amount, start_date, end_date)
 	VALUES (@budget_id, @user_id, 0, GETDATE(), '3000-01-01 00:00:00.000')
 END
---procedure set order thành đã thanh toán
-go
-CREATE OR ALTER PROCEDURE sp_set_payment_status_to_paid
-@order_id int
-as
-BEGIN
-	if(@order_id in (SELECT order_id from orders))
-		BEGIN
-			UPDATE orders
-			SET payment_status_id = 2
-			WHERE order_id = @order_id
-		END
-END
---procedure trừ tiền trong budget
 GO
-CREATE OR ALTER PROCEDURE sp_deduct_from_budget
+-- DEDUCT BUDGET:
+CREATE OR ALTER   PROCEDURE [dbo].[sp_deduct_from_budget]
 @user_id int, @deduction_amount decimal(10,2)
 as
 BEGIN
@@ -183,17 +63,73 @@ BEGIN
 			WHERE user_id = @user_id
 		END
 END
+
 GO
---procedure thực hiện giao dịch
-CREATE OR ALTER PROCEDURE sp_processTransactionProc
+-- DELETE REGISTERED COURSES:
+CREATE OR ALTER   PROCEDURE [dbo].[sp_delete_reg_courses]
+@user_id int, @register_id int
+AS 
+BEGIN
+	DELETE FROM register_course WHERE register_id = @register_id and user_id = @user_id
+END
+GO
+-- DELETE USER:
+CREATE OR ALTER   PROCEDURE [dbo].[sp_delete_user]
+    @user_id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF NOT EXISTS (SELECT 1 FROM users WHERE user_id = @user_id)
+    BEGIN
+        RAISERROR('User not found', 16, 1);
+        RETURN 0; 
+    END
+    DELETE FROM register_course WHERE user_id = @user_id;
+    DELETE FROM budget WHERE user_id = @user_id;
+    DELETE FROM users_roles WHERE user_id = @user_id;
+    DELETE FROM users WHERE user_id = @user_id;
+    RETURN 1; 
+END
+GO
+-- DEPOSIT MONEY FOR BUDGET:
+CREATE OR ALTER   PROCEDURE [dbo].[sp_deposit_budget]
+@user_id int, @deposit_amount DECIMAL(10,2)
+AS
+BEGIN
+	-- CHECK EXIST BUDGET:
+	if(@user_id not in (SELECT user_id from budget))
+		exec sp_create_budget @user_id
+	if(@deposit_amount > 0)
+		BEGIN
+			UPDATE budget
+			SET amount = amount + @deposit_amount
+			WHERE user_id = @user_id
+		END
+END
+GO
+-- SET PAYMENT STATUS WHEN FINISHING PAID:
+CREATE OR ALTER   PROCEDURE [dbo].[sp_set_payment_status_to_paid]
+@order_id int
+as
+BEGIN
+	if(@order_id in (SELECT order_id from orders))
+		BEGIN
+			UPDATE orders
+			SET payment_status_id = 2
+			WHERE order_id = @order_id
+		END
+END
+GO
+-- EXCEUTING TRANSACTION FOR ONE REGISTERED COURSE
+CREATE OR ALTER   PROCEDURE [dbo].[sp_processTransactionProc]
 @user_id int, @order_id int
 as
 BEGIN
-	--nếu có lỗi sẽ rollback và hủy thực thi tất cả các dòng lệnh
+	-- ROLLBACK AND CANCEL ALL CODE IF EXISTING ERROR:
 	SET XACT_ABORT ON
 	DECLARE @payment_status_id int
 	SET @payment_status_id = (SELECT payment_status_id from orders where order_id = @order_id)
-	--check xem order này đã thanh toán chưa
+	-- CHECK ORDER TO EXECUTE PAIDING:
 	if(@payment_status_id = 1 or @payment_status_id = 5)
 	BEGIN
 		DECLARE @total_money_needed_for_order decimal(10, 2)
@@ -211,16 +147,16 @@ BEGIN
 			END
 		END
 		ELSE
-			--thông báo không đủ tiền trong ví
+			-- MESS FOR MONEY IS NOT ENOUGH
 			print('Insufficient money in budget!')
 	END
 	ELSE
 		print('This order has been paid!')
 	SET XACT_ABORT OFF
 END
---ham loop goi processTransaction cho tung order cua user
 GO
-CREATE OR ALTER procedure sp_Loop_TransactionForAllOrders
+-- LOOP TO PAID FOR ALL ORDERS OF USER:
+CREATE OR ALTER   procedure [dbo].[sp_Loop_TransactionForAllOrders]
 @user_id int
 AS
 BEGIN
@@ -246,9 +182,9 @@ BEGIN
 		DEALLOCATE @MyCursor;
 	END;
 END
---ham thuc hien thanh toan tat ca cac khoa hoc cho user
 GO
-CREATE OR ALTER PROCEDURE sp_processTransactionForAllOrders
+-- EXECUTING TRANSACTION FOR ALL ORDERS BY LOOP 
+CREATE OR ALTER   PROCEDURE [dbo].[sp_processTransactionForAllOrders]
 @user_id int
 as
 BEGIN
@@ -275,16 +211,212 @@ BEGIN
 				print('Insufficient money in budget!')
 		END
 END
+GO
+-- POST NEW COURSE:
+CREATE OR ALTER   PROCEDURE [dbo].[sp_post_course]
+    @title VARCHAR(255),
+    @description TEXT,
+    @price DECIMAL(10,2),
+    @instructor VARCHAR(100),
+    @level_id INT,
+    @category_id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF dbo.func_check_level_and_category_exists(@level_id, @category_id) = 0
+    BEGIN
+        RAISERROR('Level or category not found', 16, 1);
+        RETURN 0; 
+    END
+    DECLARE @course_id INT; 
+    SET @course_id = ISNULL((SELECT MAX(course_id) FROM courses), 0) + 1;
+    INSERT INTO courses (course_id, title, description, price, instructor, created_at, level_id)
+    VALUES (@course_id, @title, @description, @price, @instructor, GETDATE(), @level_id);
 
-exec sp_processTransactionForAllOrders 1
-GO 
-Select * From orders
-Select * From order_items
-Select * From budget
-Select * From register_course
+	INSERT INTO course_categories(course_id,category_id)
+	VALUES (@course_id, @category_id)
+    SELECT @course_id AS course_id; 
+    RETURN 1;
+END
+GO
+-- UPDATE INFO FOR COURSE:
+CREATE OR ALTER   PROCEDURE [dbo].[sp_update_course]
+    @course_id INT,
+    @title VARCHAR(255),
+    @description TEXT,
+    @price DECIMAL(10,2),
+    @instructor VARCHAR(100),
+    @level_id INT,
+    @category_id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF dbo.func_check_level_and_category_exists(@level_id, @category_id) = 0
+    BEGIN
+        RAISERROR('Level or category not found', 16, 1);
+        RETURN 0; 
+    END
+    IF NOT EXISTS (SELECT 1 FROM courses WHERE course_id = @course_id)
+    BEGIN
+        RAISERROR('Course not found', 16, 1);
+        RETURN 0; 
+    END
+    UPDATE courses
+    SET title = @title,
+        description = @description,
+        price = @price,
+        instructor = @instructor,
+        updated_at = GETDATE(),
+        level_id = @level_id
+    WHERE course_id = @course_id;
+    UPDATE course_categories
+    SET category_id = @category_id
+    WHERE course_id = @course_id;
+    RETURN 1; 
+END
+GO
+-- DELETE COURESE
+CREATE OR ALTER   PROCEDURE [dbo].[sp_delete_course]
+    @course_id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF NOT EXISTS (SELECT 1 FROM courses WHERE course_id = @course_id)
+    BEGIN
+        RAISERROR('Course not found', 16, 1);
+        RETURN 0; 
+    END
+    DELETE FROM courses WHERE course_id = @course_id;
+    DELETE FROM course_categories WHERE course_id = @course_id;
+    RETURN 1; 
+END
+GO
+-- CREATE ADMIN ACCOUNT:
+CREATE OR ALTER   PROCEDURE [dbo].[sp_reg_admin_account]
+@username nvarchar(50), @email nvarchar(50), @password nvarchar(50), @passwordAgain nvarchar(50)
+AS
+BEGIN
+	--username đã tồn tại hoặc email đã tồn tại
+	IF EXISTS (SELECT * FROM Users WHERE username = @username OR email = @email) OR @password != @passwordAgain
+	BEGIN
+	--code báo lỗi
+	print(N'Username hoặc email đã tồn tại')
+	END
+	--username và email đều chưa tồn tại --> tạo tài khoản mới
+	ELSE
+	BEGIN
+		DECLARE @user_id int
+		SET @user_id = (SELECT COUNT(user_id) + 1 FROM Users)
+		INSERT INTO Users(user_id, username, email, password, created_at, updated_at)
+		VALUES(@user_id ,@username, @email, @password, GETDATE(), GETDATE());
+		-- Phân quyền cho user_id là admin:
+		INSERT INTO users_roles(user_id, role_id) VALUES(@user_id,0); 
+	END
+END
+GO
+-- REGISTER COURSES:
+CREATE OR ALTER PROCEDURE [dbo].[sp_reg_courses]
+    @user_id INT,
+    @course_id INT
+AS
+BEGIN
+    -- CHECK USER REGISTED EACH COURSES ONLY ONE TIME:
+    IF EXISTS (SELECT 1 FROM register_course WHERE user_id = @user_id AND course_id = @course_id)
+    BEGIN
+        SELECT 0 AS ERROR;
+        RETURN
+    END
 
-GRANT EXECUTE ON sp_set_payment_status_to_paid TO [role_after_login];
-GRANT EXECUTE ON sp_deduct_from_budget TO [role_after_login];
-GRANT EXECUTE ON sp_processTransactionProc TO [role_after_login];
-GRANT EXECUTE ON sp_Loop_TransactionForAllOrders TO [role_after_login];
-GRANT EXECUTE ON sp_processTransactionForAllOrders TO [role_after_login];
+    -- ADD NEW ROW TO REGISTER_COURSE:
+    INSERT INTO register_course (register_id, user_id, course_id, register_date)
+    SELECT ISNULL(MAX(register_id), 0) + 1, @user_id, @course_id, GETDATE()
+    FROM register_course
+
+    -- GET PRICE OF COURSE:
+    DECLARE @course_price DECIMAL(10, 2)
+    SELECT @course_price = price
+    FROM courses
+    WHERE course_id = @course_id
+
+    -- ADD NEW ORDER
+    DECLARE @order_id INT
+    INSERT INTO orders (order_id, user_id, payment_status_id, order_date, total_amount)
+    SELECT ISNULL(MAX(order_id), 0) + 1, @user_id, 1, GETDATE(), @course_price
+    FROM orders
+
+    -- ADD NEW ORDER_ITEMS:
+    INSERT INTO order_items (item_id, order_id, course_id, price, quantity)
+    VALUES ((SELECT ISNULL(MAX(item_id), 0) + 1 FROM order_items), (SELECT ISNULL(MAX(item_id), 0) + 1 FROM order_items), @course_id, @course_price, 1)
+	SELECT 1 AS SUCCESS;
+END
+GO
+-- CREATE USER ACCOUNT:
+CREATE OR ALTER   PROCEDURE [dbo].[sp_reg_user_account]
+@username nvarchar(50), @email nvarchar(50), @password nvarchar(50), @passwordAgain nvarchar(50)
+AS
+BEGIN
+	-- CHECK USER NOT DUPLICATE:
+	IF EXISTS (SELECT * FROM Users WHERE username = @username OR email = @email) OR @passwordAgain != @password
+	BEGIN
+	--code báo lỗi
+	print(N'Username hoặc email đã tồn tại')
+	END
+	-- CREATE NEW ACCOUNT:
+	ELSE
+	BEGIN
+		DECLARE @user_id int
+		SET @user_id = (SELECT COUNT(user_id) + 1 FROM Users)
+		INSERT INTO Users(user_id, username, email, password, created_at, updated_at)
+		VALUES(@user_id ,@username, @email, @password, GETDATE(), GETDATE());
+		-- Phân quyền cho user_id là user:
+		INSERT INTO users_roles(user_id, role_id) VALUES(@user_id,1);
+	END
+END
+GO
+-- ROLE TO USER:
+CREATE OR ALTER   PROCEDURE [dbo].[sp_role_to_user]
+    @user_id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    IF NOT EXISTS (SELECT 1 FROM users WHERE user_id = @user_id)
+    BEGIN
+        RAISERROR('User not found', 16, 1);
+        RETURN 0;
+    END
+
+    UPDATE users_roles 
+    SET role_id = 1	
+    WHERE user_id = @user_id;
+
+    UPDATE users
+    SET updated_at = GETDATE()
+    WHERE user_id = @user_id;
+	select 1 as success
+    RETURN 1;
+END;
+GO
+-- ROLE TO ADMIN:
+CREATE OR ALTER   PROCEDURE [dbo].[sp_update_user_authorization]
+    @user_id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    IF NOT EXISTS (SELECT 1 FROM users WHERE user_id = @user_id)
+    BEGIN
+        RAISERROR('User not found', 16, 1);
+        RETURN 0;
+    END
+
+    UPDATE users_roles 
+    SET role_id = 0	
+    WHERE user_id = @user_id;
+
+    UPDATE users
+    SET updated_at = GETDATE()
+    WHERE user_id = @user_id;
+	select 1 as success
+    RETURN 1;
+END;

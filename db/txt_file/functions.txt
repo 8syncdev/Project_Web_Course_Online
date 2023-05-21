@@ -1,6 +1,6 @@
--- TABLE-VALUED FUNCTIONS:
--- LIST ALL REGISTERED COURSE:
-CREATE OR ALTER FUNCTION [dbo].[func_list_all_paid_courses] (@user_id INT)
+GO
+-- LIST ALL PAID COURSES:
+CREATE OR ALTER   FUNCTION [dbo].[func_list_all_paid_courses] (@user_id INT)
 RETURNS @LopHocDangKi TABLE (
     course_id INT,
     title NVARCHAR(255),
@@ -68,6 +68,7 @@ BEGIN
     RETURN;
 END
 GO
+-- LIST ALL REGISTERED COURSES:
 CREATE OR ALTER FUNCTION [dbo].[func_list_all_reg_courses] (@user_id INT)
 RETURNS @LopHocDangKi TABLE (
     course_id INT,
@@ -135,40 +136,27 @@ BEGIN
     
     RETURN;
 END
-
 GO
--- SCALAR-VALUED FUNCTIONS:
--- QUANTITY REGISTERED COURSE:
-CREATE OR ALTER FUNCTION [dbo].[func_num_reg_courses] (@user_id int)
-RETURNS int
+-- CHECK DATA LEVEL AND CATEGORY EXIST:
+CREATE OR ALTER FUNCTION [dbo].[func_check_level_and_category_exists]
+(
+    @level_id INT,
+    @category_id INT
+)
+RETURNS INT
 AS
 BEGIN
-	DECLARE @Count INT;
+    DECLARE @result INT = 0;
 
-    SELECT @Count = COUNT(*)
-    FROM orders o
-    WHERE o.payment_status_id <> 2 and o.user_id = @user_id;
+    IF EXISTS (SELECT 1 FROM level_courses WHERE level_id = @level_id) AND
+       EXISTS (SELECT 1 FROM categories WHERE category_id = @category_id)
+        SET @result = 1; 
 
-    RETURN @Count;
-END
-GO
--- TOTAL MONEY FOR REGISTERED COURSES:
-CREATE OR ALTER FUNCTION [dbo].[func_total_money_reg_courses] (@user_id int)
-RETURNS decimal(10, 2)
-AS
-BEGIN
-	DECLARE @total_amount DECIMAL(10,2) = 0;
-
-    SELECT @total_amount = SUM(c.total_amount)
-    FROM orders c
-	WHERE c.payment_status_id <> 2
-	IF @total_amount is NULL
-		RETURN 0;
-    RETURN @total_amount;
+    RETURN @result;
 END
 GO
 -- CHECK WALLET IF EXIST RETURN 1 ELSE RETURN 0:
-CREATE OR ALTER FUNCTION [dbo].[func_check_wallet_exist](@user_id INT)
+CREATE OR ALTER   FUNCTION [dbo].[func_check_wallet_exist](@user_id INT)
 RETURNS INT
 AS
 BEGIN
@@ -179,6 +167,7 @@ BEGIN
     RETURN @has_wallet;
 END
 GO
+-- GET CURRENT MONEY:
 CREATE OR ALTER FUNCTION [dbo].[func_get_current_money](@user_id INT)
 RETURNS DECIMAL(10,2)
 AS
@@ -192,3 +181,32 @@ BEGIN
 
     RETURN @balance;
 END;
+GO
+-- GET NUMBER OF REGISTED COURSES:
+CREATE OR ALTER   FUNCTION [dbo].[func_num_reg_courses] (@user_id int)
+RETURNS int
+AS
+BEGIN
+	DECLARE @Count INT;
+
+    SELECT @Count = COUNT(*)
+    FROM orders o
+    WHERE o.payment_status_id <> 2 and o.user_id = @user_id;
+
+    RETURN @Count;
+END
+GO
+-- GET TOTAL MONEY REGISTERED COURSES:
+CREATE OR ALTER   FUNCTION [dbo].[func_total_money_reg_courses] (@user_id int)
+RETURNS decimal(10, 2)
+AS
+BEGIN
+	DECLARE @total_amount DECIMAL(10,2) = 0;
+
+    SELECT @total_amount = SUM(c.total_amount)
+    FROM orders c
+	WHERE c.payment_status_id <> 2
+	IF @total_amount is NULL
+		RETURN 0;
+    RETURN @total_amount;
+END

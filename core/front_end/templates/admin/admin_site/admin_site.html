@@ -1,0 +1,164 @@
+{% extends 'templates/base/base.html' %}
+{% load static %}
+
+{% block head-title %}
+Admin Dashboard
+{% endblock head-title %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/admin/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-ctn px-5">
+    <div class="row">
+        <div class="col-2">
+            <div class="inner-wrap">
+                <p class="inner-title m-0 text-white fw-bold pb-5 text-center">Options</p>
+                <a href="{% url 'admin' pk=object_data.user_id params='action-index' options='all-user' %}" id="all-user"
+                    class="btn-cus mb-3 text-white">All Users</a>
+                <a href="{% url 'admin' pk=object_data.user_id params='action-add' options='all-courses' %}" id="add-courses"
+                    class="btn-cus text-white">Add Courses</a>
+            </div>
+        </div>
+        <div class="col-10">
+            <div id="admin-root">
+                {% if action == 'action-index' %}
+                <p class="text-white text-center">All user</p>
+                <div class="">
+                    <table class="table table table-color table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-white" scope="col">Id</th>
+                                <th class="text-white" scope="col">User Name</th>
+                                <th class="text-white" scope="col">Email</th>
+                                <th class="text-white" scope="col">Password</th>
+                                <th class="text-white" scope="col">Budget</th>
+                                <th class="text-white" scope="col">Courses</th>
+                                <th class="text-white" scope="col">Role</th>
+                                <th class="text-white" scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in data %}
+                            <tr>
+                                <td class="text-white">{{item.user_id}}</td>
+                                <td class="text-white">{{item.username}}</td>
+                                <td class="text-white">{{item.email}}</td>
+                                <td class="text-white">{{item.password}}</td>
+                                <td class="text-white">{{item.amount}}</td>
+                                <td class="text-white">{{item.num_courses}}</td>
+                                <td class="text-white">{{item.role}}</td>
+                                <td class="text-white">
+                                    <a href="{% url 'admin' pk=object_data.user_id params='action-index-role-to-admin' options=item.user_id %}" class="btn btn-warning">Role To Admin</a>
+                                    <a href="{% url 'admin' pk=object_data.user_id params='action-index-role-to-user' options=item.user_id %}"
+                                        class="btn btn-warning">Role To User</a>
+                                    <a href="{% url 'admin' pk=object_data.user_id params='action-index-delete' options=item.user_id %}"
+                                        class="btn btn-warning">Delete</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+                </div>
+                {% elif action == 'action-add' %}
+                <form method="post" action="{% url 'admin' pk=object_data.user_id params='action-add' options='create' %}" class="px-5 border-bottom" id="req-post">
+                    {% csrf_token %}
+                    <div class="mb-2" id="box-update">
+                    
+                    </div>
+                    <div class="mb-2">
+                        <label for="formInputTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="formInputTitle" name="title" required>
+                    </div>
+                    <div class="mb-2">
+                        <label for="formInputDescription" class="form-label">description</label>
+                        <input type="text" class="form-control" id="formInputDescription" name="description" required>
+                    </div>
+                    <div class="mb-2">
+                        <label for="inputPrice" class="form-label">price</label>
+                        <input type="text" class="form-control" id="inputPrice" name="price" required>
+                    </div>
+                    <div class="mb-2">
+                        <label for="formInputIns" class="form-label">instructor</label>
+                        <input type="text" class="form-control" id="formInputIns" name="instructor" required>
+                    </div>
+
+                    <div class="mb-2">
+                        <div class="form-inline">
+                            <label class="my-1 mr-2" for="chooseLevel">Level</label>
+                            <select class="custom-select my-1 mr-sm-2" id="chooseLevel" name="level_id">
+                                <option value="1">Beginner</option>
+                                <option value="2">Intermediate</option>
+                                <option value="3">Advanced</option>
+                                <option value="4">Expert</option>
+                                <option value="5">Master</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="form-inline">
+                            <label class="my-1 mr-2" for="chooseCategories">Categories</label>
+                            <select class="custom-select my-1 mr-sm-2" id="chooseCategories" name="category_id">
+                                <option value="1">Programming</option>
+                                <option value="2">SQL</option>
+                                <option value="3">Design</option>
+                                <option value="4">Big Data</option>
+                                <option value="5">AI</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer text-center d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary btn-lg d-block">Create</button>
+                        <button type="submit" class="btn btn-primary btn-lg d-block">Update</button>
+                    </div>
+                </form>
+                <div class="table-info-course py-3">
+                    <table class="table table table-color table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-white" scope="col">Id</th>
+                                <th class="text-white" scope="col">Title</th>
+                                <th class="text-white" scope="col">Description</th>
+                                <th class="text-white" scope="col">Price</th>
+                                <th class="text-white" scope="col">Created date</th>
+                                <th class="text-white" scope="col">Level</th>
+                                <th class="text-white" scope="col">Categories</th>
+                                <th class="text-white" scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in data %}
+                            <tr>
+                                <td class="text-white">{{item.course_id}}</td>
+                                <td class="text-white">{{item.title}}</td>
+                                <td class="text-white">{{item.description}}</td>
+                                <td class="text-white">{{item.price}}</td>
+                                <td class="text-white">{{item.created_at|date}}</td>
+                                <td class="text-white">{{item.level_name}}</td>
+                                <td class="text-white">{{item.category_names}}</td>
+                                <td class="text-white">
+                                    <a href="{% url 'admin' pk=object_data.user_id params='action-add' options=item.course_id %}" class="btn btn-danger">Delete</a>
+                                    <button class="btn btn-info admin-edit">Edit</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                    
+                        </tbody>
+                    
+                    </table>
+                </div>
+                {% endif %}
+
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}

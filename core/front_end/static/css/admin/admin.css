@@ -1,0 +1,33 @@
+.body-admin {
+    background: #304352;
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #d7d2cc, #304352);
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #d7d2cc, #304352);
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    color: #fafafa !important;
+}
+
+.main-admin {
+    min-height: 30rem;
+}
+
+.admin-ctn .col-2 {
+    border: 2px solid #fafafa;
+    border-bottom: none;
+}
+
+.admin-ctn .btn-cus {
+    border: 2px solid #fafafa;
+    width: 100%;
+    display: block;
+    text-align: center;
+    height: 3rem;
+    padding-top: 0.5rem;
+    border-radius: 0.7rem;
+    -webkit-border-radius: 0.7rem;
+    -moz-border-radius: 0.7rem;
+    -ms-border-radius: 0.7rem;
+    -o-border-radius: 0.7rem;
+    background: #333;
+}

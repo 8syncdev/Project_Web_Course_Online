@@ -1,5 +1,4 @@
--- Create the role
-
+-- CREATE USER ROLE:
 CREATE ROLE [user];
 
 
