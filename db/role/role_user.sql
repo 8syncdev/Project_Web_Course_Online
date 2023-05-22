@@ -59,16 +59,4 @@ GRANT EXECUTE ON sp_reg_admin_account TO [user];
 GRANT EXECUTE ON sp_reg_user_account TO [user];
 
 
--- Django Permissions:
-GRANT SELECT, INSERT, UPDATE, DELETE ON auth_group TO [user];
-GRANT SELECT, INSERT, UPDATE, DELETE ON auth_group_permissions TO [user];
-GRANT SELECT, INSERT, UPDATE, DELETE ON auth_permission TO [user];
-GRANT SELECT, INSERT, UPDATE, DELETE ON auth_user TO [user];
-GRANT SELECT, INSERT, UPDATE, DELETE ON auth_user_groups TO [user];
-GRANT SELECT, INSERT, UPDATE, DELETE ON auth_user_user_permissions TO [user];
-GRANT SELECT, INSERT, UPDATE, DELETE ON django_admin_log TO [user];
-GRANT SELECT, INSERT, UPDATE, DELETE ON django_content_type TO [user];
-GRANT SELECT, INSERT, UPDATE, DELETE ON django_migrations TO [user];
-GRANT SELECT, INSERT, UPDATE, DELETE ON django_session TO [user];
-GRANT SELECT, INSERT, UPDATE, DELETE ON django_admin_log TO [user];
 

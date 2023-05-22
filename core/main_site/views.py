@@ -243,6 +243,7 @@ def list_all_courses(request, slug):
                 # Prices_Asc
                 query = """
                     SELECT * FROM v_courses_price_asc
+                    ORDER BY price ASC
                 """
                 cursor.execute(query)
                 data_prices_asc = dict_fetch_all(cursor)
