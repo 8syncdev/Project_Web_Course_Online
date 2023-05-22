@@ -44,19 +44,30 @@ window.addEventListener('load', () => {
 // Admin:
 let val_box = `<label for="formInputId" class="form-label">Id</label>
                         <input type="text" class="form-control" id="formInputId" name="id" value="6">`
+
 let box_edit = document.getElementById('box-update')
 console.log(box_edit)
 let edit = document.getElementsByClassName('admin-edit')
 let req = document.getElementById('req-post')
-console.log(req.baseURI)
+let btn_sub = document.getElementById('btn-create')
+let btn_up = document.getElementById('btn-update')
+
 let effect = () => {
     [...edit].forEach((item, idx) => {
         item.addEventListener('click', (e) => {
             console.log(e)
             box_edit.innerHTML = `<label for="formInputId" class="form-label">Id</label>
                         <input type="text" class="form-control" id="formInputId" name="id" value="${idx + 1}">`
-            
+            btn_sub.classList.add('d-none')
+            btn_up.classList.remove('d-none')
         })
     })
 }
 effect()
+
+let post = document.getElementById('btn-post')
+post.addEventListener('click', () => {
+    box_edit.innerHTML = ''
+    btn_sub.classList.remove('d-none')
+    btn_up.classList.add('d-none')
+})

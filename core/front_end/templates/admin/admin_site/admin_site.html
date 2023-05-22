@@ -66,6 +66,11 @@ Admin Dashboard
                 {% elif action == 'action-add' %}
                 <form method="post" action="{% url 'admin' pk=object_data.user_id params='action-add' options='create' %}" class="px-5 border-bottom" id="req-post">
                     {% csrf_token %}
+                    <div class="btn-switch d-flex justify-content-start gap-3 align-items-center">
+                        <p class="m-0 text-white">Mode:</p>
+                        <div class="btn btn-light btn-lg" id="btn-post">Post</div>
+                        <div class="btn btn-warning">Edit</div>
+                    </div>
                     <div class="mb-2" id="box-update">
                     
                     </div>
@@ -74,15 +79,15 @@ Admin Dashboard
                         <input type="text" class="form-control" id="formInputTitle" name="title" required>
                     </div>
                     <div class="mb-2">
-                        <label for="formInputDescription" class="form-label">description</label>
+                        <label for="formInputDescription" class="form-label">Description</label>
                         <input type="text" class="form-control" id="formInputDescription" name="description" required>
                     </div>
                     <div class="mb-2">
-                        <label for="inputPrice" class="form-label">price</label>
+                        <label for="inputPrice" class="form-label">Price</label>
                         <input type="text" class="form-control" id="inputPrice" name="price" required>
                     </div>
                     <div class="mb-2">
-                        <label for="formInputIns" class="form-label">instructor</label>
+                        <label for="formInputIns" class="form-label">Instructor</label>
                         <input type="text" class="form-control" id="formInputIns" name="instructor" required>
                     </div>
 
@@ -112,8 +117,8 @@ Admin Dashboard
                     </div>
                     
                     <div class="modal-footer text-center d-flex justify-content-center">
-                        <button type="submit" class="btn btn-primary btn-lg d-block">Create</button>
-                        <button type="submit" class="btn btn-primary btn-lg d-block">Update</button>
+                        <button type="submit" class="btn btn-primary btn-lg d-block" id="btn-create">Create</button>
+                        <button type="submit" class="btn btn-primary btn-lg d-block d-none" id="btn-update">Update</button>
                     </div>
                 </form>
                 <div class="table-info-course py-3">
