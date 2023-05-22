@@ -81,10 +81,36 @@ GO
 
 --liệt kê danh sách các users
 CREATE VIEW v_user_info AS
-SELECT u.user_id, u.username, u.email, COUNT(rc.course_id) AS num_courses
-FROM users u
-LEFT JOIN register_course rc ON u.user_id = rc.user_id
-GROUP BY u.user_id, u.username, u.email;
+CREATE OR ALTER VIEW v_user_info AS
+SELECT
+    u.user_id,
+    u.username,
+    u.email,
+    u.password,
+    u.created_at,
+    u.updated_at,
+    b.amount,
+    COUNT(rc.course_id) AS num_courses,
+    r.role_name as role
+FROM
+    users u
+LEFT JOIN
+    budget b ON u.user_id = b.user_id
+LEFT JOIN
+    register_course rc ON u.user_id = rc.user_id
+LEFT JOIN
+    users_roles ur ON u.user_id = ur.user_id
+LEFT JOIN
+    roles r ON ur.role_id = r.role_id
+GROUP BY
+    u.user_id,
+    u.username,
+    u.email,
+    u.password,
+    u.created_at,
+    u.updated_at,
+    b.amount,
+    r.role_name;
 GO
 
 --liệt kê danh sách gia sư

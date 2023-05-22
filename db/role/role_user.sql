@@ -59,16 +59,6 @@ GRANT EXECUTE ON sp_reg_admin_account TO [user];
 GRANT EXECUTE ON sp_reg_user_account TO [user];
 
 
-
-
-
-
-
-
-
-
-
-
 -- Django Permissions:
 GRANT SELECT, INSERT, UPDATE, DELETE ON auth_group TO [user];
 GRANT SELECT, INSERT, UPDATE, DELETE ON auth_group_permissions TO [user];
