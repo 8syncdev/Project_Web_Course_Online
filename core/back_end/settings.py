@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'back_end.wsgi.application'
 
 
 
-host = "MY_ASUS\THANHDUC"
+host = "DESKTOP-KR6ULCD"
 
 DATABASES = {
     "default": {
