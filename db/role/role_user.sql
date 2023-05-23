@@ -47,7 +47,6 @@ GRANT SELECT ON v_intermediate_courses_info TO [user];
 GRANT SELECT ON v_expert_courses_info TO [user];
 GRANT SELECT ON v_master_courses_info TO [user];
 GRANT SELECT ON v_advanced_courses_info TO [user];
-GRANT SELECT ON v_latest_courses TO [user];
 GRANT SELECT ON v_courses_price_asc TO [user];
 GRANT SELECT ON v_course_price_descending TO [user];
 GRANT SELECT ON v_instructor TO [user];

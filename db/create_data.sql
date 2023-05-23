@@ -49,29 +49,7 @@ VALUES
     (4, 'Data Analysis', 'This course covers data analysis techniques.', 149.99, 'Alice Lee', '2022-01-01', NULL, 4),
     (5, 'Business Intelligence', 'This course covers business intelligence concepts.', 199.99, 'Sam Wilson', '2022-01-01', NULL, 5);
 
--- Insert 5 tuples into register_course table
-INSERT INTO register_course (register_id, user_id, course_id, register_date)
-VALUES (1, 1, 1, '2022-01-01'),
-(2, 2, 1, '2022-02-01'),
-(3, 3, 2, '2022-03-01'),
-(4, 1, 3, '2022-04-01'),
-(5, 2, 2, '2022-05-01');
 
--- Insert 5 tuples into orders table
-INSERT INTO orders (order_id, user_id, order_date, total_amount, payment_status_id)
-VALUES (1, 1, '2022-01-01', 100.00, 1),
-(2, 2, '2022-02-01', 50.00, 2),
-(3, 3, '2022-03-01', 75.00, 1),
-(4, 1, '2022-04-01', 125.00, 2),
-(5, 2, '2022-05-01', 80.00, 1);
-
--- Insert 5 tuples into order_items table
-INSERT INTO order_items (item_id, order_id, course_id, price, quantity)
-VALUES (1, 1, 1, 50.00, 2),
-(2, 1, 2, 25.00, 1),
-(3, 2, 1, 50.00, 1),
-(4, 3, 2, 25.00, 3),
-(5, 4, 3, 75.00, 1);
 
 -- Insert 5 tuples into categories table
 INSERT INTO categories (category_id, category_name)

@@ -52,14 +52,6 @@ INNER JOIN level_courses lc ON c.level_id = lc.level_id
 WHERE lc.level_name = 'Advanced';
 GO
 
---Liệt kê sắp xếp theo created_at mới nhất cho khóa học.
-CREATE VIEW v_latest_courses AS
-SELECT TOP 100 PERCENT c.course_id, c.title, c.description, c.price, c.instructor, c.created_at, c.updated_at, l.level_name, 
-    STUFF((SELECT ', ' + cat.category_name FROM course_categories cc JOIN categories cat ON cc.category_id = cat.category_id WHERE cc.course_id = c.course_id FOR XML PATH ('')), 1, 2, '') AS category_names
-FROM courses c
-JOIN level_courses l ON c.level_id = l.level_id
-ORDER BY c.created_at DESC;
-GO
 
 --liệt kê các lớp học có giá tăng dần
 CREATE VIEW v_courses_price_asc AS
@@ -81,7 +73,6 @@ GO
 
 --liệt kê danh sách các users
 CREATE VIEW v_user_info AS
-CREATE OR ALTER VIEW v_user_info AS
 SELECT
     u.user_id,
     u.username,
@@ -128,11 +119,3 @@ INNER JOIN level_courses lc ON c.level_id = lc.level_id
 WHERE rc.register_date = (SELECT MAX(register_date) FROM register_course WHERE course_id = c.course_id);
 
 GO
---danh sách các course đã được paid
-CREATE VIEW v_paid_courses AS
-SELECT c.course_id, c.title, c.price, c.instructor
-FROM courses c
-INNER JOIN order_items oi ON c.course_id = oi.course_id
-INNER JOIN orders o ON oi.order_id = o.order_id
-INNER JOIN payment_status ps ON o.payment_status_id = ps.payment_status_id
-WHERE ps.status_name = 'Paid'

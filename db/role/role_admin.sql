@@ -9,3 +9,8 @@ GRANT EXECUTE ON sp_update_course TO [admin];
 GRANT EXECUTE ON sp_update_user_authorization TO [admin];
 GRANT EXECUTE ON sp_delete_user TO [admin];
 GRANT EXECUTE ON sp_role_to_user TO [admin];
+
+
+-- SCALAR VALUED FUNCTIONS:
+GRANT EXECUTE ON sp_role_to_user TO [admin];
+

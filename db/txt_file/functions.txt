@@ -205,7 +205,7 @@ BEGIN
 
     SELECT @total_amount = SUM(c.total_amount)
     FROM orders c
-	WHERE c.payment_status_id <> 2
+	WHERE c.payment_status_id <> 2 and c.user_id = @user_id
 	IF @total_amount is NULL
 		RETURN 0;
     RETURN @total_amount;

@@ -4,8 +4,8 @@ AFTER DELETE
 AS
 BEGIN
     DELETE FROM order_items
-    WHERE course_id IN (SELECT course_id FROM deleted);
+    WHERE course_id = (SELECT course_id FROM deleted);
 
     DELETE FROM orders
-    WHERE user_id IN (SELECT user_id FROM deleted);
+    WHERE order_id = (SELECT register_id FROM deleted);
 END;
