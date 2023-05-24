@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'back_end.wsgi.application'
 
 
 
-host = "DESKTOP-KR6ULCD"
+host = "DESKTOP-3OO99VA\MSSQLSERVER01"
 
 DATABASES = {
     "default": {

@@ -44,7 +44,7 @@ CREATE OR ALTER   PROCEDURE [dbo].[sp_create_budget]
 as
 BEGIN
 	DECLARE @budget_id int
-	set @budget_id = (SELECT COUNT(budget_id) + 1 FROM budget)
+	set @budget_id = (SELECT ISNULL(MAX(budget_id),0) + 1 FROM budget)
 	if(@budget_id is NULL)
 		SET @budget_id = 0
 	INSERT INTO budget (budget_id, user_id, amount, start_date, end_date)
