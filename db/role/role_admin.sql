@@ -12,5 +12,5 @@ GRANT EXECUTE ON sp_role_to_user TO [admin];
 
 
 -- SCALAR VALUED FUNCTIONS:
-GRANT EXECUTE ON sp_role_to_user TO [admin];
+GRANT EXECUTE ON func_check_level_and_category_exists TO [admin];
 

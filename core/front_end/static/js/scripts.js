@@ -57,7 +57,7 @@ let effect = () => {
         item.addEventListener('click', (e) => {
             console.log(e)
             box_edit.innerHTML = `<label for="formInputId" class="form-label">Id</label>
-                        <input type="text" class="form-control" id="formInputId" name="id" value="${idx + 1}">`
+                        <input type="text" class="form-control" id="formInputId" name="id" value="${idx + 1}" disabled>`
             btn_sub.classList.add('d-none')
             btn_up.classList.remove('d-none')
         })
