@@ -348,7 +348,7 @@ def register_courses(request, pk):
         print('Success')
         return redirect('/all-courses/all')
     except:
-        raise mess_error
+        return redirect('/')
 
 def cart_bill(request, slug, reg_id):
     global mess_error, log_decision, object_data, num_cart, role
